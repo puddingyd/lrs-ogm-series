@@ -195,13 +195,27 @@ batch script (`igv_screenshots.batch`) for full reproducibility.
 ### How to generate (macOS)
 
 ```bash
-brew install --cask igv          # install IGV Desktop if needed
-igv -b igv_screenshots.batch     # produces five PNGs in OUT_DIR
+# 1. One-time install (cask is "igv-desktop", not "igv")
+brew install --cask igv-desktop
+
+# 2. Make output directory
+mkdir -p /Users/changym/Desktop/LR_WGS/Case2/WES/Manta/igv
+
+# 3. Run the batch script. The igv-desktop cask does NOT put `igv` on
+#    PATH, so launch the .app's bundled binary directly:
+/Applications/IGV.app/Contents/MacOS/IGV -b ./igv_screenshots.batch
+
+# Alternative (if the binary path differs in your IGV version):
+#   Open IGV.app -> Tools -> Run Batch Script... -> select igv_screenshots.batch
 ```
 
 For higher-resolution / publication-grade output, open IGV Desktop
 manually, set Preferences → Tracks → Track Height to 250 px and
-File → Save SVG/Image at each coordinate.
+File → Save SVG/Image at each coordinate. **IGV-Web**
+(<https://igv.org/app/>) also works for one-off screenshots without
+installing anything: load the BAM via the file picker, paste each
+coordinate into the search bar, and use the camera-icon "Save image"
+button.
 
 ---
 
