@@ -55,7 +55,7 @@ strand = chosen["strand"]
 n = len(starts)
 sys.stderr.write(
     f"  Using transcript {chosen['name']} ({chosen['name2']}, "
-    f"strand={strand}, {n} exons, span {chosen['chromStart']}-{chosen['chromEnd']})\n"
+    f"strand={strand}, {n} exons, span {chosen.get('txStart','?')}-{chosen.get('txEnd','?')})\n"
 )
 for i,(s,e) in enumerate(zip(starts, ends), 1):
     exon_num = i if strand == "+" else n - i + 1
