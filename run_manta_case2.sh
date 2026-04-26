@@ -190,6 +190,26 @@ echo "==> Filtering for SVs near the Case 2 inversion breakpoints"
 LEFT_REGION="${ROI_CHR}:${ROI_LEFT_START}-${ROI_LEFT_END}"
 RIGHT_REGION="${ROI_CHR}:${ROI_RIGHT_START}-${ROI_RIGHT_END}"
 
+# Helper: scan a region's records for ALT fields citing a partner range.
+# POSIX awk only (BSD awk on macOS does not support gawk's match(s,re,arr)).
+bnd_check() {
+    local vcf=$1 search_region=$2 partner_min=$3 partner_max=$4 label=$5
+    bcftools view -r "$search_region" "$vcf" 2>/dev/null \
+      | awk -v rmin="$partner_min" -v rmax="$partner_max" -v lbl="$label" '
+            !/^#/ {
+                s = $5
+                while (match(s, /chr[0-9XYM]+:[0-9]+/)) {
+                    coord = substr(s, RSTART, RLENGTH)
+                    sub(/^chr[0-9XYM]+:/, "", coord)
+                    if (coord+0 >= rmin && coord+0 <= rmax) {
+                        print "      HIT [" lbl "]  " $1":"$2"  ID="$3"  FILTER="$7"  ALT="$5
+                        next
+                    }
+                    s = substr(s, RSTART + RLENGTH)
+                }
+            }' || true
+}
+
 for VCF in "$VCF_DIAG" "$VCF_CAND"; do
     [[ -f "$VCF" ]] || continue
     TAG=$(basename "$VCF" .vcf.gz)
@@ -198,22 +218,23 @@ for VCF in "$VCF_DIAG" "$VCF_CAND"; do
     {
         echo -e "CHROM\tPOS\tID\tSVTYPE\tEND\tMATEID\tFILTER\tALT"
         bcftools view -r "${LEFT_REGION},${RIGHT_REGION}" "$VCF" 2>/dev/null \
-          | bcftools query -f '%CHROM\t%POS\t%ID\t%INFO/SVTYPE\t%INFO/END\t%INFO/MATEID\t%FILTER\t%ALT\n'
+          | bcftools query -f '%CHROM\t%POS\t%ID\t%INFO/SVTYPE\t%INFO/END\t%INFO/MATEID\t%FILTER\t%ALT\n' \
+          || true
     } > "$OUT_TSV"
 
     N=$(($(wc -l < "$OUT_TSV") - 1))
-    echo "    $TAG : $N call(s) near chr7:69.9 Mb / chr7:95.7 Mb  ->  $OUT_TSV"
+    echo "    $TAG : $N record(s) near chr7:69.9 Mb / chr7:95.7 Mb  ->  $OUT_TSV"
 
-    # Highlight any record whose ALT references the partner breakpoint
-    # (Manta encodes inversions as paired BNDs)
-    echo "    -- BND mate-pair check (calls whose ALT mentions the partner region):"
-    bcftools view -r "$LEFT_REGION" "$VCF" 2>/dev/null \
-      | awk -v rmin="$ROI_RIGHT_START" -v rmax="$ROI_RIGHT_END" '
-            !/^#/ && $5 ~ /chr7:/ {
-                match($5, /chr7:([0-9]+)/, m);
-                if (m[1]+0 >= rmin && m[1]+0 <= rmax)
-                    print "      HIT  " $1":"$2"  ALT="$5"  ID="$3
-            }'
+    # Show PASS / non-PASS split for the records in ROI
+    if [[ "$N" -gt 0 ]]; then
+        awk -F'\t' 'NR>1{print "      "$3"  SVTYPE="$4"  FILTER="$7}' "$OUT_TSV"
+    fi
+
+    # Bidirectional BND mate-pair check: a real reciprocal inversion will have
+    # records on the LEFT side whose ALT cites the RIGHT region, AND vice-versa.
+    echo "    -- BND mate-pair check (calls whose ALT references the partner region):"
+    bnd_check "$VCF" "$LEFT_REGION"  "$ROI_RIGHT_START" "$ROI_RIGHT_END" "L->R"
+    bnd_check "$VCF" "$RIGHT_REGION" "$ROI_LEFT_START"  "$ROI_LEFT_END"  "R->L"
 done
 
 echo
