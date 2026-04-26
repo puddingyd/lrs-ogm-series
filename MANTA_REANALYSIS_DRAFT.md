@@ -201,11 +201,15 @@ brew install --cask igv-desktop
 # 2. Make output directory
 mkdir -p /Users/changym/Desktop/LR_WGS/Case2/WES/Manta/igv
 
-# 3. Run the batch script. The igv-desktop cask does NOT put `igv` on
-#    PATH, so launch the .app's bundled binary directly:
-/Applications/IGV.app/Contents/MacOS/IGV -b ./igv_screenshots.batch
+# 3. Locate the IGV binary (the cask installs as IGV_<version>.app, not
+#    plain IGV.app, so we resolve the path dynamically):
+IGV_BIN=$(ls -d /Applications/IGV*.app 2>/dev/null \
+              | sort -V | tail -1)/Contents/MacOS/IGV
 
-# Alternative (if the binary path differs in your IGV version):
+# 4. Run the batch script
+"$IGV_BIN" -b ./igv_screenshots.batch
+
+# Alternative if the binary path differs in your IGV version:
 #   Open IGV.app -> Tools -> Run Batch Script... -> select igv_screenshots.batch
 ```
 
