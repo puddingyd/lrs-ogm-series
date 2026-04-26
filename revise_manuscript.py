@@ -929,3 +929,111 @@ for p in doc.paragraphs:
 
 doc.save(OUTPUT)
 print('Step 17c (double-period cleanup): done')
+
+# ===========================================================================
+# Step 22. User-driven refinements (round 2)
+# ===========================================================================
+
+# (1) Author list: move Yen-Yin Chou to last position (lead-corresponding-last)
+p_authors = find_para_contains('Yu-Ming Chang')
+if p_authors:
+    p_authors.runs[0].text = ('Yu-Ming Chang a,b, Yu-Wen Pan b, Meng-Che Tsai a,b, '
+                              'Po-Ming Wu b, Pao-Lin Kuo a,c,d, Yen-Yin Chou a,b')
+    for r in p_authors.runs[1:]:
+        r.text = ''
+
+# (2) Drop the parenthetical with specific recruitment dates
+replace_all_in_doc(
+    ' (enrolment dates: 2 March 2023, 9 March 2023, and 21 October 2024)',
+    ''
+)
+
+# (3) Ethics: drop the assent sentence; British→American "paediatric"
+replace_all_in_doc(
+    'paediatric probands; assent was obtained from children when developmentally appropriate. ',
+    'pediatric probands. '
+)
+
+# (4) Code availability: shorter
+replace_all_in_doc(
+    'Custom analysis scripts (including the retrospective Manta and Delly re-analysis pipelines for Case 2 and the AUTS2 per-exon coverage computation) are available from the corresponding authors upon request.',
+    'Custom analysis scripts are available from the corresponding authors upon request.'
+)
+
+# (5) Figure 2C legend (Case 2): chr7:139 Mb → chr7:95.7 Mb
+# Identify by paragraph signature unique to Figure 2C.
+for p in doc.paragraphs:
+    if '7q11.22 (chr7:69,922,416)' in p.text and 'chr7:139 Mb (upper track)' in p.text:
+        replace_in_para(p, 'around chr7:139 Mb (upper track)',
+                            'around chr7:95.7 Mb (upper track)')
+
+# (6) §2.6.2 downstream-interpretation paragraph: rebalance toward SV, add
+#     AnnotSV prioritization parameters, use real VEP / ANNOVAR versions, trim SNV section
+p_downstream = find_para('For downstream interpretation, CNVs and SVs')
+if p_downstream:
+    NEW_TEXT = (
+        'For downstream interpretation, structural variants and copy-number '
+        'variants were annotated and prioritized with AnnotSV '
+        '(https://www.lbgi.fr/AnnotSV/), with the AnnotSV ranking that '
+        'integrates SV-population frequency (gnomAD-SV), gene content '
+        '(OMIM, RefSeq, ENCODE/ClinGen regulatory regions), pathogenicity '
+        'predictions (TAD boundary disruption, dosage sensitivity), and '
+        'phenotype concordance via Exomiser_gene_pheno_score using HPO '
+        'terms matched to each proband. SVs were retained for review when '
+        'their AnnotSV ranking class was 3-5 (likely pathogenic / pathogenic) '
+        'or when an Exomiser_gene_pheno_score >0 indicated phenotype '
+        'relevance. Breakpoints and copy-number changes were manually '
+        'reviewed in IGV, and structural-variant architecture and '
+        'read-level configurations were further assessed in Ribbon '
+        '(https://v2.genomeribbon.com/). The filtering and prioritization '
+        'workflows for HiFiCNV-derived CNVs and pbsv-derived SVs are '
+        'summarized in Supplementary Tables 4 and 5, respectively. '
+        'In parallel, SNVs and indels were annotated with Ensembl Variant '
+        'Effect Predictor (VEP v115) and ANNOVAR (release 2024-04-30), '
+        'filtered against gnomAD v4.1 (allele frequency ≥0.01 excluded) and '
+        'ClinVar (release 2025-12-08), and scored with AlphaMissense, '
+        'MetaRNN, and SpliceAI before being classified according to the '
+        'ACMG/AMP guideline.'
+    )
+    p_downstream.runs[0].text = NEW_TEXT
+    for r in p_downstream.runs[1:]:
+        r.text = ''
+
+# (7) British → American spelling (the user wrote the original in American
+#     English; restore consistency by reverting the British forms I introduced)
+brit_to_amer = [
+    ('prioritised', 'prioritized'),
+    ('prioritises', 'prioritizes'),
+    ('prioritisation', 'prioritization'),
+    ('prioritisations', 'prioritizations'),
+    ('summarised', 'summarized'),
+    ('summarises', 'summarizes'),
+    ('recognised', 'recognized'),
+    ('recognises', 'recognizes'),
+    ('characterised', 'characterized'),
+    ('characterises', 'characterizes'),
+    ('characterisation', 'characterization'),
+    ('characterisations', 'characterizations'),
+    ('analysed', 'analyzed'),
+    # NOTE: 'analyses' is ambiguous (British verb + American plural noun);
+    # do not auto-convert.
+    ('paediatric', 'pediatric'),
+    ('artefact', 'artifact'),
+    ('artefactual', 'artifactual'),
+    ('utilised', 'utilized'),
+    ('utilises', 'utilizes'),
+    ('organised', 'organized'),
+    # UK spellings of -ize verbs:
+    ('emphasised', 'emphasized'),
+    ('emphasises', 'emphasizes'),
+    ('normalised', 'normalized'),
+    ('normalises', 'normalizes'),
+]
+for british, american in brit_to_amer:
+    replace_all_in_doc(british, american)
+    # capitalised versions
+    replace_all_in_doc(british.capitalize(), american.capitalize())
+
+print('Step 22 (user round-2 refinements + British→American): done')
+doc.save(OUTPUT)
+print('Saved:', OUTPUT)

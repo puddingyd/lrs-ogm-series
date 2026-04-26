@@ -31,7 +31,7 @@ carry no scientific content change).
 
 ### rev #94
 
-> The study was approved by the Institutional Review Board of National Cheng Kung University Hospital, Taiwan (IRB No. A-BR-109-045). Written informed consent was obtained from all adult participants or the legal guardians of paediatric probands; assent was obtained from children when developmentally appropriate. All participants (or legal guardians) provided written informed consent for the use of their de-identified medical and genetic data, including for publication.
+> The study was approved by the Institutional Review Board of National Cheng Kung University Hospital, Taiwan (IRB No. A-BR-109-045). Written informed consent was obtained from all adult participants or the legal guardians of pediatric probands. All participants (or legal guardians) provided written informed consent for the use of their de-identified medical and genetic data, including for publication.
 
 ### rev #95
 
@@ -79,7 +79,7 @@ carry no scientific content change).
 
 ### rev #106
 
-> Custom analysis scripts (including the retrospective Manta and Delly re-analysis pipelines for Case 2 and the AUTS2 per-exon coverage computation) are available from the corresponding authors upon request.
+> Custom analysis scripts are available from the corresponding authors upon request.
 
 ### rev #149
 
@@ -93,13 +93,13 @@ carry no scientific content change).
 
 > 44. Rausch, T., Zichner, T., Schlattl, A., Stütz, A.M., Benes, V. & Korbel, J.O. DELLY: structural variant discovery by integrated paired-end and split-read analysis. Bioinformatics 28, i333–9 (2012).
 
-### rev #162
+### rev #165
 
 > Supplementary Table 6. Retrospective short-read SV re-analysis of the Case 2 WES BAM (Manta v1.6.0 and Delly v1.2.6) and per-base read depth at AUTS2 exons (NM_015570.4) and at the LRS-defined inversion breakpoints.
 
-### rev #163
+### rev #166
 
-> Footnotes. Manta was run with --exome and without restricting --callRegions; Delly was run with default parameters. The reference used was GRCh38_full_analysis_set_plus_decoy_hla.fa. Per-base mean depth was computed with samtools depth -a. Across the 19 captured AUTS2 exons, mean depth ranged from 35.90× to 274.85× (median 106.09×). The two LRS-defined breakpoints (chr7:69,938,691, AUTS2 intron 2; chr7:95,720,897, 7q21.3) showed mean depths of 0.07× and 0.16×, respectively, and 0 / 0 records within ±50 kb in Manta diploidSV / candidateSV and Delly. Genome-wide, Manta produced 129 chromosome-7 candidate SVs and Delly produced 142 chromosome-7 SV records, confirming that both callers operated normally.
+> Footnote. Manta was run with --exome and without restricting --callRegions; Delly was run with default parameters. The reference used was GRCh38_full_analysis_set_plus_decoy_hla.fa. Per-base mean depth was computed with samtools depth -a. Across the 19 captured AUTS2 exons, mean depth ranged from 35.90× to 274.85× (median 106.09×). The two LRS-defined breakpoints (chr7:69,938,691, AUTS2 intron 2; chr7:95,720,897, 7q21.3) showed mean depths of 0.07× and 0.16×, respectively, and 0 / 0 records within ±50 kb in Manta diploidSV / candidateSV and Delly. Genome-wide, Manta produced 129 chromosome-7 candidate SVs and Delly produced 142 chromosome-7 SV records, confirming that both callers operated normally.
 
 ---
 
@@ -111,12 +111,12 @@ OLD:
 > Yu-Ming Chang a,b, Yu-Wen Pan b, Yen-Yin Chou a,b, Meng-Che Tsai a,b, Po-Ming Wu b, Pao-lin Kuo a,c,d
 
 NEW:
-> Yu-Ming Chang a,b, Yu-Wen Pan b, Yen-Yin Chou a,b, Meng-Che Tsai a,b, Po-Ming Wu b, Pao-Lin Kuo a,c,d
+> Yu-Ming Chang a,b, Yu-Wen Pan b, Meng-Che Tsai a,b, Po-Ming Wu b, Pao-Lin Kuo a,c,d, Yen-Yin Chou a,b
 
 Inline diff:
 
 ```
-Yu-Ming Chang a,b, Yu-Wen Pan b, Yen-Yin … ou a,b, Meng-Che Tsai a,b, Po-Ming Wu b, 〔- Pao-lin -〕 〔+ Pao-Lin +〕 Kuo a,c,d
+Yu-Ming Chang a,b, Yu-Wen Pan b, 〔- Yen-Yin Chou a,b, -〕 Meng-Che Tsai a,b, Po-Ming Wu b, 〔- Pao-lin -〕 〔+ Pao-Lin +〕 Kuo 〔- a,c,d -〕 〔+ a,c,d, Yen-Yin Chou a,b +〕
 ```
 
 ### orig #6 → rev #6
@@ -167,12 +167,12 @@ OLD:
 > We enrolled three unrelated probands referred to clinical genetics for neurodevelopmental features (including developmental delay, intellectual disability, autism spectrum disorder, and/or epilepsy). Each proband had de novo balanced chromosomal rearrangements identified by G-banded karyotyping and/or chromosomal microarray. Eligible patients were identified by their neurologists or clinical geneticists and recruited consecutively. Demographic data, personal and family histories, prior genetic test reports, and relevant examinations were abstracted from the medical record.
 
 NEW:
-> We enrolled three unrelated probands referred to clinical genetics for neurodevelopmental features (including developmental delay, intellectual disability, autism spectrum disorder, and/or epilepsy). Each proband had de novo balanced chromosomal rearrangements identified by G-banded karyotyping and/or chromosomal microarray. Eligible probands were recruited consecutively at National Cheng Kung University Hospital between March 2023 and October 2024 (enrolment dates: 2 March 2023, 9 March 2023, and 21 October 2024) by referral from their attending neurologists or clinical geneticists. Demographic data, personal and family histories, prior genetic test reports, and relevant examinations were abstracted from the medical record.
+> We enrolled three unrelated probands referred to clinical genetics for neurodevelopmental features (including developmental delay, intellectual disability, autism spectrum disorder, and/or epilepsy). Each proband had de novo balanced chromosomal rearrangements identified by G-banded karyotyping and/or chromosomal microarray. Eligible probands were recruited consecutively at National Cheng Kung University Hospital between March 2023 and October 2024 by referral from their attending neurologists or clinical geneticists. Demographic data, personal and family histories, prior genetic test reports, and relevant examinations were abstracted from the medical record.
 
 Inline diff:
 
 ```
-We enrolled three unrelated probands ref …  and/or chromosomal microarray. Eligible 〔- patients -〕 〔+ probands +〕 were 〔- identified -〕 〔+ recruited consecutively at National Cheng Kung University Hospital between March 2023 and October 2024 (enrolment dates: 2 March 2023, 9 March 2023, and 21 October 2024) +〕 by 〔+ referral from +〕 their 〔+ attending +〕 neurologists or clinical 〔- geneticists and recruited consecutively. -〕 〔+ geneticists. +〕 Demographic data, personal and family hi … were abstracted from the medical record.
+We enrolled three unrelated probands ref …  and/or chromosomal microarray. Eligible 〔- patients -〕 〔+ probands +〕 were 〔- identified -〕 〔+ recruited consecutively at National Cheng Kung University Hospital between March 2023 and October 2024 +〕 by 〔+ referral from +〕 their 〔+ attending +〕 neurologists or clinical 〔- geneticists and recruited consecutively. -〕 〔+ geneticists. +〕 Demographic data, personal and family hi … were abstracted from the medical record.
 ```
 
 ### orig #26 → rev #28
@@ -209,12 +209,12 @@ OLD:
 > For downstream interpretation, CNVs and SVs were annotated and prioritized using AnnotSV (https://www.lbgi.fr/AnnotSV/), while SNVs and indels were filtered and prioritized using an in-house pipeline for small-variant interpretation. Breakpoints and copy-number changes were manually reviewed in IGV, and structural variant architecture and read-level configurations were further assessed using Ribbon (https://v2.genomeribbon.com/). The filtering and prioritization workflow for HiFiCNV-derived CNVs and pbsv-derived SVs is summarized in Supplementary Tables 4 and 5, respectively.
 
 NEW:
-> For downstream interpretation, CNVs and SVs were annotated and prioritised using AnnotSV (https://www.lbgi.fr/AnnotSV/), while SNVs and indels were annotated with the latest releases of Ensembl Variant Effect Predictor (VEP) and ANNOVAR. Population allele frequencies were obtained from gnomAD v4.1, and clinical assertions from ClinVar (release 2025-12-08). Variants with allele frequency ≥0.01 in gnomAD (any population) were excluded as common. Functional impact was further assessed using AlphaMissense for missense variants, MetaRNN as a meta-predictor of pathogenicity, and SpliceAI for predicted splicing effects. The remaining variants were classified following the ACMG/AMP guideline. Breakpoints and copy-number changes were manually reviewed in IGV, and structural variant architecture and…
+> For downstream interpretation, structural variants and copy-number variants were annotated and prioritized with AnnotSV (https://www.lbgi.fr/AnnotSV/), with the AnnotSV ranking that integrates SV-population frequency (gnomAD-SV), gene content (OMIM, RefSeq, ENCODE/ClinGen regulatory regions), pathogenicity predictions (TAD boundary disruption, dosage sensitivity), and phenotype concordance via Exomiser_gene_pheno_score using HPO terms matched to each proband. SVs were retained for review when their AnnotSV ranking class was 3-5 (likely pathogenic / pathogenic) or when an Exomiser_gene_pheno_score >0 indicated phenotype relevance. Breakpoints and copy-number changes were manually reviewed in IGV, and structural-variant architecture and read-level configurations were further assessed in Ribb…
 
 Inline diff:
 
 ```
-For downstream interpretation, CNVs and SVs were annotated and 〔- prioritized -〕 〔+ prioritised +〕 using AnnotSV (https://www.lbgi.fr/AnnotSV/), while SNVs and indels were 〔- filtered -〕 〔+ annotated with the latest releases of Ensembl Variant Effect Predictor (VEP) +〕 and 〔- prioritized -〕 〔+ ANNOVAR. Population allele frequencies were obtained from gnomAD v4.1, and clinical assertions from ClinVar (release 2025-12-08). Variants with allele frequency ≥0.01 in gnomAD (any population) were excluded as common. Functional impact was further assessed +〕 using 〔- an in-house pipeline -〕 〔+ AlphaMissense +〕 for 〔- small-variant interpretation. -〕 〔+ missense variants, MetaRNN as a meta-predictor of pathogenicity, and SpliceAI for predicted splicing effects. The remaining variants were classified following the ACMG/AMP guideline. +〕 Breakpoints and copy-number changes were … v2.genomeribbon.com/). The filtering and 〔- prioritization workflow -〕 〔+ prioritisation workflows +〕 for HiFiCNV-derived CNVs and pbsv-derived SVs 〔- is summarized -〕 〔+ are summarised +〕 in Supplementary Tables 4 and 5, respectively.
+For downstream interpretation, 〔- CNVs -〕 〔+ structural variants +〕 and 〔- SVs -〕 〔+ copy-number variants +〕 were annotated and prioritized 〔- using -〕 〔+ with +〕 AnnotSV (https://www.lbgi.fr/AnnotSV/), 〔- while SNVs -〕 〔+ with the AnnotSV ranking that integrates SV-population frequency (gnomAD-SV), gene content (OMIM, RefSeq, ENCODE/ClinGen regulatory regions), pathogenicity predictions (TAD boundary disruption, dosage sensitivity), +〕 and 〔- indels -〕 〔+ phenotype concordance via Exomiser_gene_pheno_score using HPO terms matched to each proband. SVs +〕 were 〔- filtered and prioritized using -〕 〔+ retained for review when their AnnotSV ranking class was 3-5 (likely pathogenic / pathogenic) or when +〕 an 〔- in-house pipeline for small-variant interpretation. -〕 〔+ Exomiser_gene_pheno_score >0 indicated phenotype relevance. +〕 Breakpoints and copy-number changes were manually reviewed in IGV, and 〔- structural variant -〕 〔+ structural-variant +〕 architecture and read-level configurations were further assessed 〔- using -〕 〔+ in +〕 Ribbon (https://v2.genomeribbon.com/). The filtering and prioritization 〔- workflow -〕 〔+ workflows +〕 for HiFiCNV-derived CNVs and pbsv-derived SVs 〔- is -〕 〔+ are +〕 summarized in Supplementary Tables 4 and 5, respectively. 〔+ In parallel, SNVs and indels were annotated with Ensembl Variant Effect Predictor (VEP v115) and ANNOVAR (release 2024-04-30), filtered against gnomAD v4.1 (allele frequency ≥0.01 excluded) and ClinVar (release 2025-12-08), and scored with AlphaMissense, MetaRNN, and SpliceAI before being classified according to the ACMG/AMP guideline. +〕
 ```
 
 ### orig #43 → rev #45
@@ -242,7 +242,7 @@ NEW:
 Inline diff:
 
 ```
-Breakpoint-level analysis provided insig … ed by REPD and REPP as the source of the 〔- inversion (Figure 1G). -〕 〔+ inversion. +〕 Sequence inspection of the remaining two …  with microhomology-mediated end-joining 〔- (MMEJ)(Figure 1G). -〕 〔+ (MMEJ); the proposed mechanism is summarised in Figure 1G. +〕 Taken together, the breakpoint anatomy s … ontributed to the complex rearrangement.
+Breakpoint-level analysis provided insig … ed by REPD and REPP as the source of the 〔- inversion (Figure 1G). -〕 〔+ inversion. +〕 Sequence inspection of the remaining two …  with microhomology-mediated end-joining 〔- (MMEJ)(Figure 1G). -〕 〔+ (MMEJ); the proposed mechanism is summarized in Figure 1G. +〕 Taken together, the breakpoint anatomy s … CR boundaries contributed to the complex 〔- rearrangement. -〕 〔+ rearrangement.https://genome.ucsc.edu/ +〕
 ```
 
 ### orig #52 → rev #54
@@ -279,12 +279,12 @@ OLD:
 > C. Left panel showed the OGM circos plot of chromosome 7 highlighting the inversion (arc) and its two breakpoints. Right panel showed OGM evidence of an intrachromosomal fusion between 7q11.22 (chr7:69,922,416) and 7q21.3 (chr7:95,719,708). The proband is shown in green (middle track) and the references in blue (upper and lower tracks); gray connectors indicate alignment of the proband OGM labels to the corresponding reference labels. Notably, the breakpoint at chr7:69.9 Mb disrupts AUTS2. The left portion of the proband map (middle tract) aligns in an inverted orientation to the reference around chr7:69.9 Mb (upper tract), consistent with an inversion. The purple region marks the two OGM labels flanking the breakpoint, indicating that the breakpoint lies within this interval.
 
 NEW:
-> C. Left panel showed the OGM circos plot of chromosome 7 highlighting the inversion (arc) and its two breakpoints. Right panel showed OGM evidence of an intrachromosomal fusion between 7q11.22 (chr7:69,922,416) and 7q21.3 (chr7:95,719,708). The proband is shown in green (middle track) and the references in blue (upper and lower tracks); gray connectors indicate alignment of the proband OGM labels to the corresponding reference labels. Notably, the breakpoint at chr7:69.9 Mb disrupts AUTS2. The left portion of the proband map (middle track) aligns in an inverted orientation to the reference around chr7:139 Mb (upper track), consistent with an inversion. The purple region marks the two OGM labels flanking the breakpoint, indicating that the breakpoint lies within this interval.
+> C. Left panel showed the OGM circos plot of chromosome 7 highlighting the inversion (arc) and its two breakpoints. Right panel showed OGM evidence of an intrachromosomal fusion between 7q11.22 (chr7:69,922,416) and 7q21.3 (chr7:95,719,708). The proband is shown in green (middle track) and the references in blue (upper and lower tracks); gray connectors indicate alignment of the proband OGM labels to the corresponding reference labels. Notably, the breakpoint at chr7:69.9 Mb disrupts AUTS2. The left portion of the proband map (middle track) aligns in an inverted orientation to the reference around chr7:95.7 Mb (upper track), consistent with an inversion. The purple region marks the two OGM labels flanking the breakpoint, indicating that the breakpoint lies within this interval.
 
 Inline diff:
 
 ```
-C. Left panel showed the OGM circos plot …  left portion of the proband map (middle 〔- tract) -〕 〔+ track) +〕 aligns in an inverted orientation to the reference around 〔- chr7:69.9 -〕 〔+ chr7:139 +〕 Mb (upper 〔- tract), -〕 〔+ track), +〕 consistent with an inversion. The purple … he breakpoint lies within this interval.
+C. Left panel showed the OGM circos plot …  left portion of the proband map (middle 〔- tract) -〕 〔+ track) +〕 aligns in an inverted orientation to the reference around 〔- chr7:69.9 -〕 〔+ chr7:95.7 +〕 Mb (upper 〔- tract), -〕 〔+ track), +〕 consistent with an inversion. The purple … he breakpoint lies within this interval.
 ```
 
 ### orig #79 → rev #81
@@ -340,7 +340,7 @@ NEW:
 Inline diff:
 
 ```
-The second case carried a de novo invers … y, scoliosis, and craniofacial anomalies 〔- [20], -〕 〔+ 20, +〕 resolving a diagnostic odyssey in which  … icult to reconstruct accurately with WES 〔- [15]. -〕 〔+ 15. To verify that the failure of the prior WES was a fundamental assay limitation rather than an artefact of the analysis pipeline, we retrospectively re-analysed the original WES BAM with two methodologically distinct short-read SV callers — Manta v1.6.0 43 (run with --exome and without restricting --callRegions) and Delly v1.2.6 44 (default parameters) — using the GRCh38 + hs38d1 + HLA reference. Both callers operated normally on chromosome 7 (Manta: 129 candidate SVs; Delly: 142 SV records), yet neither returned any record within a ±50 kb window of either LRS-defined breakpoint, including in Manta's most permissive candidateSV output (Supplementary Table 6). Per-base read depth at the two breakpoints was 0.07× and 0.16×, against 154.81× at a captured positive-control exon (TP53 exon 4) and a median of 106.09× across the 19 captured AUTS2 exons (range 35.90×–274.85×; NM_015570.4) — a more than 1,500-fold deficit relative to the captured AUTS2 exonic baseline. The concordant negative result across two independent callers, together with the near-zero local read depth, demonstrates that the AUTS2 intron 2 breakpoint and its 7q21.3 partner lie outside exome capture territory and are inaccessible to short-read WES at the read level, regardless of the variant caller applied. +〕 Furthermore, breakpoint analysis suggest … t with non-homologous end joining (NHEJ) 〔- [17, 30]. -〕 〔+ 17,30. +〕 Our integrative approach thus turned an  … ubstantial added value for patient care.
+The second case carried a de novo invers … y, scoliosis, and craniofacial anomalies 〔- [20], -〕 〔+ 20, +〕 resolving a diagnostic odyssey in which  … icult to reconstruct accurately with WES 〔- [15]. -〕 〔+ 15. To verify that the failure of the prior WES was a fundamental assay limitation rather than an artifact of the analysis pipeline, we retrospectively re-analyzed the original WES BAM with two methodologically distinct short-read SV callers — Manta v1.6.0 43 (run with --exome and without restricting --callRegions) and Delly v1.2.6 44 (default parameters) — using the GRCh38 + hs38d1 + HLA reference. Both callers operated normally on chromosome 7 (Manta: 129 candidate SVs; Delly: 142 SV records), yet neither returned any record within a ±50 kb window of either LRS-defined breakpoint, including in Manta's most permissive candidateSV output (Supplementary Table 6). Per-base read depth at the two breakpoints was 0.07× and 0.16×, against 154.81× at a captured positive-control exon (TP53 exon 4) and a median of 106.09× across the 19 captured AUTS2 exons (range 35.90×–274.85×; NM_015570.4) — a more than 1,500-fold deficit relative to the captured AUTS2 exonic baseline. The concordant negative result across two independent callers, together with the near-zero local read depth, demonstrates that the AUTS2 intron 2 breakpoint and its 7q21.3 partner lie outside exome capture territory and are inaccessible to short-read WES at the read level, regardless of the variant caller applied. +〕 Furthermore, breakpoint analysis suggest … t with non-homologous end joining (NHEJ) 〔- [17, 30]. -〕 〔+ 17,30. +〕 Our integrative approach thus turned an  … ubstantial added value for patient care.
 ```
 
 ### orig #86 → rev #88
@@ -391,12 +391,12 @@ OLD:
 > Taken together, our findings support three main implications. First, LRS and OGM uncovered cryptic genomic alterations and breakpoint-level details that were not resolved by karyotyping or microarray, thereby refining genotype-phenotype correlations, providing definitive molecular diagnosis, and ending the diagnostic odyssey, in line with prior studies advocating the incorporation of higher-resolution genomic technologies into cytogenetic evaluation [13, 16]. Second, apparently balanced translocations or inversions may still be pathogenic because they can harbor cryptic imbalances, disrupt dosage-sensitive genes, or alter regulatory architecture despite the absence of visible net chromosomal gain or loss on routine testing [4-8]. Such patients therefore require long-term follow-up and indi…
 
 NEW:
-> Taken together, our findings support three main implications. First, LRS and OGM uncovered cryptic genomic alterations and breakpoint-level details that were not resolved by karyotyping or microarray, thereby refining genotype-phenotype correlations, providing a refined molecular characterisation that resolves the apparent karyotype as an unbalanced deletion-inversion-deletion event in Case 1 and identifies dosage-sensitive disease genes (the 8p23.1 microdeletion region, AUTS2, CNTNAP2) as the most likely contributors to each proband's phenotype, in line with prior studies advocating the incorporation of higher-resolution genomic technologies into cytogenetic evaluation 13,16. Second, apparently balanced translocations or inversions may still be pathogenic because they can harbor cryptic i…
+> Taken together, our findings support three main implications. First, LRS and OGM uncovered cryptic genomic alterations and breakpoint-level details that were not resolved by karyotyping or microarray, thereby refining genotype-phenotype correlations, providing a refined molecular characterization that resolves the apparent karyotype as an unbalanced deletion-inversion-deletion event in Case 1 and identifies dosage-sensitive disease genes (the 8p23.1 microdeletion region, AUTS2, CNTNAP2) as the most likely contributors to each proband's phenotype, in line with prior studies advocating the incorporation of higher-resolution genomic technologies into cytogenetic evaluation 13,16. Second, apparently balanced translocations or inversions may still be pathogenic because they can harbor cryptic i…
 
 Inline diff:
 
 ```
-Taken together, our findings support thr … notype-phenotype correlations, providing 〔- definitive -〕 〔+ a refined +〕 molecular 〔- diagnosis, -〕 〔+ characterisation that resolves the apparent karyotype as an unbalanced deletion-inversion-deletion event in Case 1 +〕 and 〔- ending -〕 〔+ identifies dosage-sensitive disease genes (the 8p23.1 microdeletion region, AUTS2, CNTNAP2) as +〕 the 〔- diagnostic odyssey, -〕 〔+ most likely contributors to each proband's phenotype, +〕 in line with prior studies advocating th … technologies into cytogenetic evaluation 〔- [13, 16]. -〕 〔+ 13,16. +〕 Second, apparently balanced translocatio … omosomal gain or loss on routine testing 〔- [4-8]. -〕 〔+ 4-8. +〕 Such patients therefore require long-ter … d detection of gene-disrupting junctions 〔- [12, 16]. -〕 〔+ 12,16. +〕 Accordingly, test selection should be ta …  rearrangement and diagnostic objective.
+Taken together, our findings support thr … notype-phenotype correlations, providing 〔- definitive -〕 〔+ a refined +〕 molecular 〔- diagnosis, -〕 〔+ characterization that resolves the apparent karyotype as an unbalanced deletion-inversion-deletion event in Case 1 +〕 and 〔- ending -〕 〔+ identifies dosage-sensitive disease genes (the 8p23.1 microdeletion region, AUTS2, CNTNAP2) as +〕 the 〔- diagnostic odyssey, -〕 〔+ most likely contributors to each proband's phenotype, +〕 in line with prior studies advocating th … technologies into cytogenetic evaluation 〔- [13, 16]. -〕 〔+ 13,16. +〕 Second, apparently balanced translocatio … omosomal gain or loss on routine testing 〔- [4-8]. -〕 〔+ 4-8. +〕 Such patients therefore require long-ter … d detection of gene-disrupting junctions 〔- [12, 16]. -〕 〔+ 12,16. +〕 Accordingly, test selection should be ta …  rearrangement and diagnostic objective.
 ```
 
 ### orig #90 → rev #92
@@ -405,12 +405,12 @@ OLD:
 > In summary, our study shows that combining LRS and OGM allows precise resolution of complex SVs, uncovering cryptic deletions and gene disruptions that explain their phenotypes, converting ambiguous karyotypic findings into definitive molecular diagnoses, and providing clues to the underlying rearrangement mechanisms. As LRS and OGM continue to mature, we anticipate their routine adoption in genetic diagnostics, bridging the longstanding gap between karyotype and sequence analysis, improving genotype-phenotype correlation and strengthening the basis for clinical counselling.
 
 NEW:
-> In summary, our study shows that combining LRS and OGM allows precise resolution of complex SVs, uncovering cryptic deletions and gene disruptions that explain their phenotypes, refining ambiguous karyotypic findings into precise molecular characterisations, and providing clues to the underlying rearrangement mechanisms. As LRS and OGM continue to mature, we anticipate their routine adoption in genetic diagnostics, bridging the longstanding gap between karyotype and sequence analysis, improving genotype-phenotype correlation and strengthening the basis for clinical counselling.
+> In summary, our study shows that combining LRS and OGM allows precise resolution of complex SVs, uncovering cryptic deletions and gene disruptions that explain their phenotypes, refining ambiguous karyotypic findings into precise molecular characterizations, and providing clues to the underlying rearrangement mechanisms. As LRS and OGM continue to mature, we anticipate their routine adoption in genetic diagnostics, bridging the longstanding gap between karyotype and sequence analysis, improving genotype-phenotype correlation and strengthening the basis for clinical counselling.
 
 Inline diff:
 
 ```
-In summary, our study shows that combini … sruptions that explain their phenotypes, 〔- converting -〕 〔+ refining +〕 ambiguous karyotypic findings into 〔- definitive -〕 〔+ precise +〕 molecular 〔- diagnoses, -〕 〔+ characterisations, +〕 and providing clues to the underlying re … ning the basis for clinical counselling.
+In summary, our study shows that combini … sruptions that explain their phenotypes, 〔- converting -〕 〔+ refining +〕 ambiguous karyotypic findings into 〔- definitive -〕 〔+ precise +〕 molecular 〔- diagnoses, -〕 〔+ characterizations, +〕 and providing clues to the underlying re … ning the basis for clinical counselling.
 ```
 
 ### orig #100 → rev #116
