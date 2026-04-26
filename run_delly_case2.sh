@@ -80,9 +80,9 @@ if [[ -n "$EXCLUDE_BED" ]]; then
     [[ -f "$EXCLUDE_BED" ]] || { echo "ERROR: EXCLUDE_BED missing" >&2; exit 1; }
     EXC_ABS=$(abspath "$EXCLUDE_BED");   EXC_DIR=$(dirname "$EXC_ABS")
     DOCKER_BASE+=( -v "$EXC_DIR":/in_exc:ro )
-    EXC_ARG=( -x "/in_exc/$(basename "$EXC_ABS")" )
+    EXC_PATH="/in_exc/$(basename "$EXC_ABS")"
 else
-    EXC_ARG=()
+    EXC_PATH=""
 fi
 
 C_BAM="/in_bam/$(basename "$BAM_ABS")"
@@ -97,15 +97,17 @@ VCF_OUT="$OUTDIR/${SAMPLE}.delly.vcf.gz"
 echo "==> Pulling Delly image: $DELLY_IMAGE"
 docker pull --platform linux/amd64 "$DELLY_IMAGE"
 
+# Build the delly command incrementally so we never expand a possibly-empty
+# array under `set -u` (bash 3.2 on macOS treats that as unbound variable).
+DELLY_CMD=( delly call -g "$C_REF" -o "/out/$(basename "$BCF_OUT")" )
+[[ -n "$EXC_PATH" ]] && DELLY_CMD+=( -x "$EXC_PATH" )
+DELLY_CMD+=( "$C_BAM" )
+
 echo "==> Running delly call (this can take 5-30 min on WES)"
 "${DOCKER_BASE[@]}" \
     -e OMP_NUM_THREADS="$THREADS" \
     "$DELLY_IMAGE" \
-    delly call \
-        -g "$C_REF" \
-        -o "/out/$(basename "$BCF_OUT")" \
-        "${EXC_ARG[@]}" \
-        "$C_BAM"
+    "${DELLY_CMD[@]}"
 
 echo "==> Converting BCF to VCF.gz"
 bcftools view -O z -o "$VCF_OUT" "$BCF_OUT"
