@@ -18,19 +18,28 @@ set -euo pipefail
 # ============================================================================
 
 # Input BAM (sorted, indexed, aligned to the same reference as $REF below)
-BAM="/ABSOLUTE/PATH/TO/case2.wes.bam"
+BAM="/Users/changym/Desktop/LR_WGS/Case2/WES_raw_d/AA001181/AA001181.bam"
 
 # Reference FASTA + .fai (must match the BAM build; Case 2 LRS used GRCh38)
-REF="/ABSOLUTE/PATH/TO/GRCh38.fa"
+REF="/Volumes/genetics/humandb/hg38/hg38.fa"
 
-# Exome capture target BED (the kit's bait/target intervals).
-# Must be bgzipped + tabix-indexed for Manta's --callRegions.
-# If you only have a plain BED:
+# OPTIONAL exome capture target BED (Roche KAPA HyperExome).
+# Leave EMPTY ("") to skip --callRegions (recommended for finding the
+# AUTS2 intron 2 BND, which lies OUTSIDE capture targets and only shows
+# up via off-target / spill-over reads).
+#
+# If you want to use one, it must be bgzipped + tabix-indexed:
 #   sort -k1,1 -k2,2n targets.bed | bgzip > targets.bed.gz && tabix -p bed targets.bed.gz
-TARGETS_BED_GZ="/ABSOLUTE/PATH/TO/exome_targets.bed.gz"
+# Public V1 BED (close superset of V2/Plus in coding regions, no login required):
+#   curl -O https://hgdownload.soe.ucsc.edu/gbdb/hg38/exomeProbesets/KAPA_HyperExome_hg38_capture_targets.bb
+#   bigBedToBed KAPA_HyperExome_hg38_capture_targets.bb /tmp/k.bed
+#   sort -k1,1 -k2,2n /tmp/k.bed | bgzip > KAPA_HyperExome_hg38_capture_targets.bed.gz
+#   tabix -p bed KAPA_HyperExome_hg38_capture_targets.bed.gz
+# For the official V2/Plus BED, login to sequencing.roche.com -> eLabDoc.
+TARGETS_BED_GZ=""
 
 # Output directory (will be created)
-OUTDIR="$(pwd)/manta_case2_out"
+OUTDIR="/Users/changym/Desktop/LR_WGS/Case2/WES/Manta"
 
 # How many CPU threads Manta may use
 THREADS=8
@@ -62,8 +71,16 @@ echo "==> Checking input files"
 [[ -f "$BAM"    ]] || { echo "ERROR: BAM not found: $BAM" >&2; exit 1; }
 [[ -f "$REF"    ]] || { echo "ERROR: REF not found: $REF" >&2; exit 1; }
 [[ -f "${REF}.fai" ]] || { echo "ERROR: missing ${REF}.fai (run: samtools faidx $REF)" >&2; exit 1; }
-[[ -f "$TARGETS_BED_GZ" ]] || { echo "ERROR: targets BED not found: $TARGETS_BED_GZ" >&2; exit 1; }
-[[ -f "${TARGETS_BED_GZ}.tbi" ]] || { echo "ERROR: missing ${TARGETS_BED_GZ}.tbi (run: tabix -p bed $TARGETS_BED_GZ)" >&2; exit 1; }
+
+USE_BED=0
+if [[ -n "$TARGETS_BED_GZ" ]]; then
+    [[ -f "$TARGETS_BED_GZ" ]] || { echo "ERROR: targets BED not found: $TARGETS_BED_GZ" >&2; exit 1; }
+    [[ -f "${TARGETS_BED_GZ}.tbi" ]] || { echo "ERROR: missing ${TARGETS_BED_GZ}.tbi (run: tabix -p bed $TARGETS_BED_GZ)" >&2; exit 1; }
+    USE_BED=1
+    echo "    Using --callRegions BED: $TARGETS_BED_GZ"
+else
+    echo "    No --callRegions BED supplied (recommended: lets Manta use off-target evidence)"
+fi
 
 # Make sure BAM is indexed
 if [[ ! -f "${BAM}.bai" && ! -f "${BAM%.bam}.bai" ]]; then
@@ -91,7 +108,6 @@ abspath() { python3 -c "import os,sys; print(os.path.realpath(sys.argv[1]))" "$1
 
 BAM_ABS=$(abspath "$BAM");                BAM_DIR=$(dirname "$BAM_ABS")
 REF_ABS=$(abspath "$REF");                REF_DIR=$(dirname "$REF_ABS")
-TGT_ABS=$(abspath "$TARGETS_BED_GZ");     TGT_DIR=$(dirname "$TGT_ABS")
 OUT_ABS=$(abspath "$OUTDIR")
 
 DOCKER_RUN=(
@@ -99,27 +115,29 @@ DOCKER_RUN=(
     --platform linux/amd64                 # force amd64 image on Apple Silicon
     -v "$BAM_DIR":/in_bam:ro
     -v "$REF_DIR":/in_ref:ro
-    -v "$TGT_DIR":/in_tgt:ro
     -v "$OUT_ABS":/out
     "$MANTA_IMAGE"
 )
 
+if [[ $USE_BED -eq 1 ]]; then
+    TGT_ABS=$(abspath "$TARGETS_BED_GZ");  TGT_DIR=$(dirname "$TGT_ABS")
+    DOCKER_RUN+=( -v "$TGT_DIR":/in_tgt:ro )
+    C_TGT="/in_tgt/$(basename "$TGT_ABS")"
+fi
+
 C_BAM="/in_bam/$(basename "$BAM_ABS")"
 C_REF="/in_ref/$(basename "$REF_ABS")"
-C_TGT="/in_tgt/$(basename "$TGT_ABS")"
 C_RUN="/out/manta_run"
 
 # ============================================================================
 # 4. CONFIGURE + RUN MANTA  (--exome enables WES-tuned thresholds)
 # ============================================================================
 
+CONFIG_ARGS=( --bam "$C_BAM" --referenceFasta "$C_REF" --runDir "$C_RUN" --exome )
+[[ $USE_BED -eq 1 ]] && CONFIG_ARGS+=( --callRegions "$C_TGT" )
+
 echo "==> configManta.py"
-"${DOCKER_RUN[@]}" configManta.py \
-    --bam "$C_BAM" \
-    --referenceFasta "$C_REF" \
-    --runDir "$C_RUN" \
-    --exome \
-    --callRegions "$C_TGT"
+"${DOCKER_RUN[@]}" configManta.py "${CONFIG_ARGS[@]}"
 
 echo "==> runWorkflow.py (this can take 10-60 min for a typical exome)"
 "${DOCKER_RUN[@]}" "$C_RUN/runWorkflow.py" -j "$THREADS"
