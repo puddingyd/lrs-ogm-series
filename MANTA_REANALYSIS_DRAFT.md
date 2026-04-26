@@ -36,23 +36,46 @@ every AUTS2 RefSeq exon (NM_015570), and for TP53 exon 4
 ## 2. Supplementary Table X. WES read depth and Manta calls at AUTS2 and the
    LRS-defined inversion breakpoints (Case 2)
 
-| Region | Annotation | Length (bp) | Mean read depth (×) | Manta records within ±50 kb |
-|---|---|---:|---:|---:|
-| chr17:7,675,994–7,676,272 | TP53 exon 4 (positive control) | 279 | **154.81** | n/a |
-| chr7:69,599,000–69,602,000 | AUTS2 exon 1 / promoter region (3 kb window) | 3,001 | 18.91 | n/a |
-| chr7:69,938,191–69,939,191 | LRS breakpoint A (AUTS2 intron 2) | 1,001 | **0.07** | **0 (diploidSV); 0 (candidateSV)** |
-| chr7:95,720,397–95,721,397 | LRS breakpoint B (7q21.3) | 1,001 | **0.16** | **0 (diploidSV); 0 (candidateSV)** |
-| (per-exon AUTS2) | NM_015570 exons 1–19 | … | … | n/a |
+All coordinates GRCh38; AUTS2 transcript NM_015570.4. Depth is mean
+per-base coverage from `samtools depth -a` of the original WES BAM.
+Manta records were enumerated from `diploidSV.vcf.gz` and
+`candidateSV.vcf.gz` within a ±50 kb window of each LRS breakpoint.
 
-> **Note:** the per-exon AUTS2 row will be expanded with the output of
-> `compute_auts2_exon_depth.sh` (`depth_per_region.tsv`).
+| # | Region (1-based) | Annotation | Length (bp) | Mean depth (×) | Manta records (diploidSV / candidateSV) |
+|---|---|---|---:|---:|---:|
+| – | chr17:7,675,995–7,676,272 | TP53 exon 4 (positive control) | 278 | 154.81 | n/a |
+| 1 | chr7:69,598,475–69,599,962 | AUTS2 exon 1 (5′ UTR + start) | 1,488 | 35.90 | n/a |
+| 2 | chr7:69,899,286–69,899,498 | AUTS2 exon 2 | 213 | 274.85 | n/a |
+| 3 | chr7:70,118,132–70,118,233 | AUTS2 exon 3 | 102 | 110.64 | n/a |
+| 4 | chr7:70,134,536–70,134,571 | AUTS2 exon 4 | 36 | 160.83 | n/a |
+| 5 | chr7:70,435,752–70,435,781 | AUTS2 exon 5 | 30 | 103.77 | n/a |
+| 6 | chr7:70,698,569–70,698,620 | AUTS2 exon 6 | 52 | 100.29 | n/a |
+| 7 | chr7:70,762,870–70,763,341 | AUTS2 exon 7 | 472 | 195.63 | n/a |
+| 8 | chr7:70,764,752–70,765,005 | AUTS2 exon 8 | 254 | 105.28 | n/a |
+| 9 | chr7:70,766,114–70,766,334 | AUTS2 exon 9 | 221 | 228.38 | n/a |
+| 10 | chr7:70,768,024–70,768,068 | AUTS2 exon 10 | 45 | 63.27 | n/a |
+| 11 | chr7:70,771,549–70,771,644 | AUTS2 exon 11 | 96 | 106.09 | n/a |
+| 12 | chr7:70,774,028–70,774,099 | AUTS2 exon 12 | 72 | 165.08 | n/a |
+| 13 | chr7:70,775,357–70,775,386 | AUTS2 exon 13 | 30 | 123.83 | n/a |
+| 14 | chr7:70,777,103–70,777,174 | AUTS2 exon 14 | 72 | 91.78 | n/a |
+| 15 | chr7:70,781,615–70,781,756 | AUTS2 exon 15 | 142 | 236.77 | n/a |
+| 16 | chr7:70,784,942–70,785,019 | AUTS2 exon 16 | 78 | 91.26 | n/a |
+| 17 | chr7:70,785,955–70,786,038 | AUTS2 exon 17 | 84 | 95.80 | n/a |
+| 18 | chr7:70,787,209–70,787,431 | AUTS2 exon 18 | 223 | 168.65 | n/a |
+| 19 | chr7:70,789,748–70,793,506 | AUTS2 exon 19 (CDS + 3′ UTR) | 3,759 | 64.74 | n/a |
+| – | chr7:69,938,192–69,939,191 | **LRS breakpoint A (AUTS2 intron 2, ±500 bp)** | 1,000 | **0.07** | **0 / 0** |
+| – | chr7:95,720,398–95,721,397 | **LRS breakpoint B (7q21.3, ±500 bp)** | 1,000 | **0.16** | **0 / 0** |
 
-For genome-wide context, Manta produced **129 candidate structural
-variants on chromosome 7** (consistent with the per-chromosome counts on
-chr1 = 220, chr2 = 170, chr19 = 199), confirming that the workflow
-operated normally; the absence of records around the LRS breakpoints
-therefore reflects the absence of supporting reads rather than a
-caller-level limitation.
+Across the 19 captured AUTS2 exons, mean depth ranged from 35.90× to
+274.85× (median 106.09×, mean 132.78×). The two LRS-defined breakpoints
+were covered at 0.07× and 0.16× — **more than 1,500-fold and 660-fold
+lower than the median captured AUTS2 exon, and >900-fold lower than the
+TP53 positive control**. For genome-wide context, Manta produced 129
+candidate structural variants on chromosome 7 (consistent with
+per-chromosome counts of chr1 = 220, chr2 = 170, chr19 = 199),
+confirming that the workflow itself operated normally; the absence of
+records around the LRS breakpoints therefore reflects the absence of
+supporting reads rather than a caller-level limitation.
 
 ---
 
@@ -87,13 +110,15 @@ caller-level limitation.
 > within a ±50 kb window of either LRS-defined breakpoint
 > (Supplementary Table X). Per-position read depth at the two breakpoints
 > was 0.07× and 0.16×, against 154.81× at a captured positive-control
-> exon (TP53 exon 4) and tens to hundreds of reads per base across
-> captured AUTS2 exons (Supplementary Table X). Together these data
-> demonstrate that the AUTS2 intron 2 breakpoint and its 7q21.3 partner
-> lie outside exome capture territory and are therefore inaccessible to
-> short-read WES at the read level, regardless of the variant caller
-> applied — providing direct evidence of the additional information
-> contributed by LRS and OGM in this case.
+> exon (TP53 exon 4) and a median of 106.09× across the 19 captured
+> AUTS2 exons (range 35.90×–274.85×; NM_015570.4; Supplementary Table X)
+> — a more than 1,500-fold deficit of coverage at the AUTS2 intron 2
+> breakpoint relative to the captured AUTS2 exonic baseline. Together
+> these data demonstrate that the AUTS2 intron 2 breakpoint and its
+> 7q21.3 partner lie outside exome capture territory and are therefore
+> inaccessible to short-read WES at the read level, regardless of the
+> variant caller applied — providing direct evidence of the additional
+> information contributed by LRS and OGM in this case.
 
 ---
 
@@ -116,8 +141,11 @@ caller-level limitation.
 > candidateSV level — were returned within ±50 kb of either LRS-defined
 > breakpoint** (chr7:69,938,691 and chr7:95,720,897). Per-position WES
 > depth at these positions was 0.07× and 0.16×, against 154.81× at
-> TP53 exon 4 (positive control) and tens to hundreds of reads per
-> captured AUTS2 exon. The inability of the prior WES to detect this
+> TP53 exon 4 (positive control) and a median of 106.09× (range
+> 35.90×–274.85×) across the 19 captured AUTS2 exons (NM_015570.4) —
+> a >1,500-fold coverage deficit at the AUTS2 intron 2 breakpoint
+> relative to the captured AUTS2 exonic baseline. The inability of the
+> prior WES to detect this
 > rearrangement was therefore an assay-level rather than analytical
 > limitation: the breakpoints fall in deep intronic / intergenic
 > regions outside the exome capture targets, where coverage is
