@@ -103,22 +103,25 @@ supporting reads rather than a caller-level limitation.
 > which prior WES had been non-informative. To verify that the failure of
 > WES was a fundamental assay limitation rather than an artefact of the
 > analysis pipeline, we retrospectively re-analyzed the original WES BAM
-> with Manta v1.6.0 in `--exome` mode without restricting `--callRegions`,
-> giving the caller access to both on-target and off-target reads. Manta
-> produced 129 candidate SVs on chromosome 7 yet returned no records —
-> neither in diploidSV nor in the most permissive candidateSV output —
-> within a ±50 kb window of either LRS-defined breakpoint
-> (Supplementary Table X). Per-position read depth at the two breakpoints
-> was 0.07× and 0.16×, against 154.81× at a captured positive-control
-> exon (TP53 exon 4) and a median of 106.09× across the 19 captured
-> AUTS2 exons (range 35.90×–274.85×; NM_015570.4; Supplementary Table X)
-> — a more than 1,500-fold deficit of coverage at the AUTS2 intron 2
-> breakpoint relative to the captured AUTS2 exonic baseline. Together
-> these data demonstrate that the AUTS2 intron 2 breakpoint and its
-> 7q21.3 partner lie outside exome capture territory and are therefore
-> inaccessible to short-read WES at the read level, regardless of the
-> variant caller applied — providing direct evidence of the additional
-> information contributed by LRS and OGM in this case.
+> with two methodologically distinct short-read SV callers — Manta v1.6.0
+> (run with `--exome` and without restricting `--callRegions`, so that
+> off-target reads were available) and Delly v1.2.6 (default parameters)
+> — using the same GRCh38 + hs38d1 + HLA reference. Both callers
+> operated normally on chromosome 7 (Manta: 129 candidate SVs; Delly:
+> 142 records), yet neither returned **any** record within a ±50 kb
+> window of either LRS-defined breakpoint, including in Manta's most
+> permissive candidateSV output (Supplementary Table X). Per-position
+> read depth at the two breakpoints was 0.07× and 0.16×, against 154.81×
+> at a captured positive-control exon (TP53 exon 4) and a median of
+> 106.09× across the 19 captured AUTS2 exons (range 35.90×–274.85×;
+> NM_015570.4; Supplementary Table X) — a more than 1,500-fold deficit
+> of coverage at the AUTS2 intron 2 breakpoint relative to the captured
+> AUTS2 exonic baseline. The concordant negative result across two
+> independent callers, together with the near-zero local read depth,
+> demonstrates that the AUTS2 intron 2 breakpoint and its 7q21.3 partner
+> lie outside exome capture territory and are therefore inaccessible to
+> short-read WES at the read level — providing direct evidence of the
+> additional information contributed by LRS and OGM in this case.
 
 ---
 
@@ -133,28 +136,32 @@ supporting reads rather than a caller-level limitation.
 
 > **Authors' response.** We thank the reviewer for this constructive
 > suggestion. To address it directly, we re-analyzed Case 2's original
-> WES BAM with Manta v1.6.0, an SV caller designed to integrate
-> split-read and discordant-pair evidence, configured with `--exome` and
-> without restricting `--callRegions` so that off-target reads were
-> available. Manta operated normally (129 candidate SVs called on
-> chromosome 7 alone), but **no records — even at the most permissive
-> candidateSV level — were returned within ±50 kb of either LRS-defined
-> breakpoint** (chr7:69,938,691 and chr7:95,720,897). Per-position WES
-> depth at these positions was 0.07× and 0.16×, against 154.81× at
-> TP53 exon 4 (positive control) and a median of 106.09× (range
-> 35.90×–274.85×) across the 19 captured AUTS2 exons (NM_015570.4) —
-> a >1,500-fold coverage deficit at the AUTS2 intron 2 breakpoint
-> relative to the captured AUTS2 exonic baseline. The inability of the
-> prior WES to detect this
-> rearrangement was therefore an assay-level rather than analytical
-> limitation: the breakpoints fall in deep intronic / intergenic
-> regions outside the exome capture targets, where coverage is
-> essentially zero, so no short-read SV caller could be expected to
-> recover them. We have added this analysis as a new Supplementary
-> Methods subsection ("Retrospective Manta short-read SV re-analysis of
-> Case 2 WES data") and Supplementary Table X (WES depth and Manta calls
-> at AUTS2 and the LRS-defined breakpoints), and revised the
-> corresponding Discussion paragraph (page X, lines Y–Z) accordingly.
+> WES BAM with **two methodologically distinct short-read SV callers —
+> Manta v1.6.0 and Delly v1.2.6** — both designed to integrate
+> split-read and discordant-pair evidence. Manta was configured with
+> `--exome` and without restricting `--callRegions` so that off-target
+> reads were available; Delly was run with default parameters. Both
+> callers operated normally on chromosome 7 (Manta: 129 candidate SVs;
+> Delly: 142 SV records), but **neither returned any record within ±50
+> kb of either LRS-defined breakpoint** (chr7:69,938,691 and
+> chr7:95,720,897), including at Manta's most permissive candidateSV
+> level. Per-position WES depth at these positions was 0.07× and 0.16×,
+> against 154.81× at TP53 exon 4 (positive control) and a median of
+> 106.09× (range 35.90×–274.85×) across the 19 captured AUTS2 exons
+> (NM_015570.4) — a >1,500-fold coverage deficit at the AUTS2 intron 2
+> breakpoint relative to the captured AUTS2 exonic baseline. The
+> concordant negative result across two independent callers establishes
+> that the inability of prior WES to detect this rearrangement was an
+> assay-level rather than analytical limitation: the breakpoints fall
+> in deep intronic / intergenic regions outside the exome capture
+> targets, where coverage is essentially zero, so no short-read SV
+> caller could be expected to recover them. We have added this analysis
+> as new Supplementary Methods subsections ("Retrospective Manta
+> short-read SV re-analysis of Case 2 WES data" and "Independent caller
+> verification with Delly") and Supplementary Table X (WES depth and
+> Manta + Delly calls at AUTS2 and the LRS-defined breakpoints), and
+> revised the corresponding Discussion paragraph (page X, lines Y–Z)
+> accordingly.
 
 ---
 
@@ -223,12 +230,12 @@ button.
 
 ---
 
-## 6. Independent caller verification with Delly (placeholder for results)
+## 6. Independent caller verification with Delly
 
 To address the residual concern that the negative Manta result might
 reflect Manta-specific behaviour rather than a true absence of evidence,
 we additionally re-analyzed the Case 2 WES BAM with Delly v1.2.6
-(`dellytools/delly:v1.2.6`), an independently-developed structural-variant
+(`dellytools/delly:v1.2.6`), an independently developed structural-variant
 caller that combines paired-end and split-read evidence (Rausch et al.,
 Bioinformatics 2012). Delly was run with default parameters
 (`delly call -g <REF> -o <OUT.bcf> <BAM>`), with the same reference
@@ -237,21 +244,27 @@ Bioinformatics 2012). Delly was run with default parameters
 and INFO/END fields were inspected for any pair joining the two breakpoint
 windows.
 
-> _Results to fill in after `run_delly_case2.sh` completes:_
->
-> - Total Delly SV records genome-wide: **N**
-> - Records on chr7: **N**
-> - Records within ±50 kb of chr7:69,938,691: **N**
-> - Records within ±50 kb of chr7:95,720,897: **N**
-> - Records pairing the two windows (INFO/CHR2 or BND ALT mate): **N**
+**Results.** Delly produced **2,922 SV records genome-wide**, including
+**142 records on chromosome 7** (comparable to chr1 = 153, chr2 = 226,
+chr19 = 325). Despite this dense calling, **0 records fell within the
+±50 kb window of chr7:69,938,691 (AUTS2 intron 2)** and **0 records
+within the ±50 kb window of chr7:95,720,897 (7q21.3)**. The
+bidirectional mate-pair scan returned no record on either side whose
+INFO/CHR2 + INFO/END or BND ALT cited a coordinate in the partner
+window. Delly's negative result therefore exactly corroborates Manta's
+across both breakpoint windows.
 
-If — as expected — Delly returns 0 records in the breakpoint windows,
-add the following sentence to the Discussion / Reviewer response:
+**Combined Manta + Delly summary**
 
-> "An independent re-analysis with Delly v1.2.6 produced concordant
-> negative results in the same windows, confirming that the absence of
-> evidence is shared across SV callers and reflects the underlying read
-> distribution rather than caller-specific behaviour."
+| Caller | Version | chr7 SV records | Records in ±50 kb of chr7:69,938,691 | Records in ±50 kb of chr7:95,720,897 | Reciprocal mate-pair |
+|---|---|---:|---:|---:|---:|
+| Manta  | 1.6.0  | 129 (candidateSV) | 0 | 0 | 0 |
+| Delly  | 1.2.6  | 142              | 0 | 0 | 0 |
+
+The concordant negative result across two methodologically distinct
+callers confirms that the absence of evidence reflects the underlying
+read distribution at the breakpoints (mean depth 0.07× and 0.16×;
+Supplementary Table X) rather than caller-specific behaviour.
 
 ---
 
@@ -262,9 +275,12 @@ Reference : GRCh38_full_analysis_set_plus_decoy_hla.fa
             (1000 Genomes FTP /vol1/ftp/technical/reference/GRCh38_reference_genome/)
 Manta     : 1.6.0   image quay.io/biocontainers/manta:1.6.0--h9ee0642_1
             configManta.py --bam <BAM> --referenceFasta <REF> --runDir <RUN> --exome
-            runWorkflow.py -j 8           wall-time 150 s
+            runWorkflow.py -j 8                 wall-time 150 s
 Delly     : 1.2.6   image dellytools/delly:v1.2.6
             delly call -g <REF> -o <OUT.bcf> <BAM>
+            Total SVs 2,922 ; chr7 142 ; ROI 0   wall-time ~10 min
+IGV       : 2.19.5  cask igv-desktop
+            <IGV.app>/Contents/MacOS/IGV -b igv_screenshots.batch
 ```
 
 Scripts in this repository:
