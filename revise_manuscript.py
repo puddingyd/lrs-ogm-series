@@ -1037,3 +1037,88 @@ for british, american in brit_to_amer:
 print('Step 22 (user round-2 refinements + British→American): done')
 doc.save(OUTPUT)
 print('Saved:', OUTPUT)
+
+# ===========================================================================
+# Step 23. Round-3 refinements
+# ===========================================================================
+
+# (1) Methods §2.6.2 downstream-interpretation paragraph: align with the
+#     Supplementary Tables 4/5 footnote wording, spell out ACMG/AMP, and
+#     keep abbreviations consistent (use SVs and CNVs).
+p_downstream = find_para('For downstream interpretation,')
+if p_downstream:
+    NEW_TEXT = (
+        'For downstream interpretation, SVs and CNVs were annotated and '
+        'prioritized with AnnotSV (https://www.lbgi.fr/AnnotSV/). For SVs, '
+        'pbsv calls with FILTER=PASS and SVLEN ≥50 bp were retained and '
+        'filtered against AnnotSV benign/common population-resource '
+        'annotations (default allele frequency >0.01); within this '
+        'population-filtered set, exon- or transcript-disrupting SVs with '
+        'phenotype relevance (Exomiser_gene_pheno_score >0, computed using '
+        'HPO terms matched to each proband) or OMIM-disease relevance, as '
+        'well as SVs overlapping known pathogenic regions, were carried '
+        'forward for manual review. For CNVs, HiFiCNV calls with '
+        'FILTER=PASS (default ≥100 kb) were retained and those with '
+        'phenotype relevance, OMIM relevance, or overlap with known '
+        'pathogenic regions (per AnnotSV annotation) were reviewed '
+        'manually. Breakpoints and copy-number changes were inspected in '
+        'IGV; SV architecture and read-level configurations were further '
+        'assessed in Ribbon (https://v2.genomeribbon.com/). The full '
+        'filtering and prioritization workflows for HiFiCNV-derived CNVs '
+        'and pbsv-derived SVs are summarized in Supplementary Tables 4 '
+        'and 5, respectively. In parallel, SNVs and indels were annotated '
+        'with Ensembl Variant Effect Predictor (VEP v115) and ANNOVAR '
+        '(release 2024-04-30), filtered against gnomAD v4.1 (allele '
+        'frequency ≥0.01 excluded) and ClinVar (release 2025-12-08), and '
+        'scored with AlphaMissense, MetaRNN, and SpliceAI. Variants were '
+        'classified according to the American College of Medical Genetics '
+        'and Genomics / Association for Molecular Pathology (ACMG/AMP) '
+        'guideline.'
+    )
+    p_downstream.runs[0].text = NEW_TEXT
+    for r in p_downstream.runs[1:]:
+        r.text = ''
+
+# (2) Figure 2C legend: revert chr7:95.7 Mb (upper track) → chr7:69.9 Mb (upper track)
+#     Both occurrences in this caption refer to the AUTS2 (q11.22) breakpoint
+#     position; the partner is shown via inverted alignment, not its own coord.
+for p in doc.paragraphs:
+    if p.text.startswith('C.') and '7q11.22 (chr7:69,922,416)' in p.text:
+        replace_in_para(p, 'around chr7:95.7 Mb (upper track)',
+                            'around chr7:69.9 Mb (upper track)')
+
+# (3) Abbreviation cleanup — use SVs / CNVs after their first body definition
+#     Confine to Discussion paragraphs (post-Methods, pre-References) to avoid
+#     touching figure legends and references.
+TARGET_DISCUSSION_PHRASES = [
+    ('complex structural variants', 'complex SVs'),
+    ('the contribution of structural variants',
+     'the contribution of SVs'),  # only safe if such phrase appears
+]
+
+# Apply only to Discussion-area paragraphs.
+in_discussion = False
+for p in doc.paragraphs:
+    if p.text.strip() == '4. Discussion':
+        in_discussion = True
+        continue
+    if p.text.strip().startswith('Reference') or \
+       p.text.startswith('Ethics declarations'):
+        in_discussion = False
+    if not in_discussion:
+        continue
+    # Skip figure legend lines
+    if p.text.startswith('Figure ') or (len(p.text) > 2 and p.text[1:3] == '. '
+                                        and p.text[0].isalpha()):
+        continue
+    # CNV/SV cleanup — case-sensitive replacements where used unintentionally
+    replace_in_para(p, 'rapidly detects copy-number variants, balanced rearrangements',
+                       'rapidly detects CNVs, balanced rearrangements')
+    replace_in_para(p, 'simultaneous detection of SNVs, indels and SVs',
+                       'simultaneous detection of SNVs, indels, and SVs')
+    replace_in_para(p, 'complex structural variants',
+                       'complex SVs')
+
+print('Step 23 (round-3 refinements + abbreviation tidy): done')
+doc.save(OUTPUT)
+print('Saved:', OUTPUT)
