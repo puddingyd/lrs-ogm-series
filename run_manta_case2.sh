@@ -11,7 +11,8 @@
 # Manta    : github.com/Illumina/manta  (we use the official quay.io image)
 # ----------------------------------------------------------------------------
 
-set -euo pipefail
+set -Eeuo pipefail
+trap 'rc=$?; echo "ERROR: failed at line $LINENO (exit $rc): $BASH_COMMAND" >&2; exit $rc' ERR
 
 # ============================================================================
 # 1. USER CONFIG  -- 請依實際路徑修改
@@ -60,12 +61,18 @@ ROI_RIGHT_END=95770897
 # ============================================================================
 
 echo "==> Checking dependencies"
-for cmd in docker samtools bcftools; do
+for cmd in docker samtools bcftools python3; do
     if ! command -v "$cmd" >/dev/null 2>&1; then
         echo "ERROR: '$cmd' not found in PATH. Install via: brew install $cmd  (or Docker Desktop)" >&2
         exit 1
     fi
 done
+
+echo "==> Checking that Docker daemon is running"
+if ! docker info >/dev/null 2>&1; then
+    echo "ERROR: Docker daemon not running. Start Docker Desktop and re-run." >&2
+    exit 1
+fi
 
 echo "==> Checking input files"
 [[ -f "$BAM"    ]] || { echo "ERROR: BAM not found: $BAM" >&2; exit 1; }
@@ -83,19 +90,32 @@ else
 fi
 
 # Make sure BAM is indexed
+echo "==> Checking BAM index"
 if [[ ! -f "${BAM}.bai" && ! -f "${BAM%.bam}.bai" ]]; then
-    echo "==> BAM index missing, creating with samtools"
+    echo "    BAM index missing, creating with samtools"
     samtools index -@ "$THREADS" "$BAM"
+else
+    echo "    BAM index found"
 fi
 
-# Confirm BAM contig style matches reference (chr1 vs 1)
-BAM_CHR=$(samtools view -H "$BAM" | awk '/^@SQ/{print $2; exit}' | sed 's/SN://')
-REF_CHR=$(head -n1 "${REF}.fai" | cut -f1)
+# Confirm BAM contig style matches reference (chr1 vs 1).
+# Note: awk's early `exit` makes samtools see SIGPIPE; capture stderr separately
+# and tolerate the 141 exit code so `set -e` does not kill the script.
+echo "==> Checking BAM vs reference contig naming"
+BAM_CHR=$(samtools view -H "$BAM" 2>/dev/null | awk '/^@SQ/{sub(/^SN:/,"",$2); print $2; exit}' || true)
+REF_CHR=$(awk 'NR==1{print $1}' "${REF}.fai")
+echo "    BAM first contig: ${BAM_CHR:-<empty>}"
+echo "    REF first contig: ${REF_CHR:-<empty>}"
+if [[ -z "$BAM_CHR" || -z "$REF_CHR" ]]; then
+    echo "ERROR: could not read contig names from BAM or REF .fai" >&2
+    exit 1
+fi
 if [[ "$BAM_CHR" != "$REF_CHR" ]]; then
-    echo "WARNING: BAM first contig ($BAM_CHR) != reference first contig ($REF_CHR)."
+    echo "WARNING: contig naming differs (BAM='$BAM_CHR', REF='$REF_CHR')."
     echo "         Manta will likely fail. Re-align or re-header before continuing."
 fi
 
+echo "==> Creating output directory: $OUTDIR"
 mkdir -p "$OUTDIR"
 
 # ============================================================================
@@ -104,11 +124,15 @@ mkdir -p "$OUTDIR"
 # Manta inside the container needs to see all input files. We mount each
 # file's parent directory and rewrite paths to /data/<basename>.
 
+echo "==> Resolving absolute paths for Docker bind-mounts"
 abspath() { python3 -c "import os,sys; print(os.path.realpath(sys.argv[1]))" "$1"; }
 
 BAM_ABS=$(abspath "$BAM");                BAM_DIR=$(dirname "$BAM_ABS")
 REF_ABS=$(abspath "$REF");                REF_DIR=$(dirname "$REF_ABS")
 OUT_ABS=$(abspath "$OUTDIR")
+echo "    BAM_DIR=$BAM_DIR"
+echo "    REF_DIR=$REF_DIR"
+echo "    OUT_ABS=$OUT_ABS"
 
 DOCKER_RUN=(
     docker run --rm
@@ -136,7 +160,11 @@ C_RUN="/out/manta_run"
 CONFIG_ARGS=( --bam "$C_BAM" --referenceFasta "$C_REF" --runDir "$C_RUN" --exome )
 [[ $USE_BED -eq 1 ]] && CONFIG_ARGS+=( --callRegions "$C_TGT" )
 
+echo "==> Pulling Manta Docker image (first run only): $MANTA_IMAGE"
+docker pull --platform linux/amd64 "$MANTA_IMAGE"
+
 echo "==> configManta.py"
+echo "    args: ${CONFIG_ARGS[*]}"
 "${DOCKER_RUN[@]}" configManta.py "${CONFIG_ARGS[@]}"
 
 echo "==> runWorkflow.py (this can take 10-60 min for a typical exome)"
