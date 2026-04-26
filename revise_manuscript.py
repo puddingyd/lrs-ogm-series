@@ -575,3 +575,357 @@ for name, check in checks:
     except Exception as e:
         status = f'ERR ({e})'
     print(f'  [{status}] {name}')
+
+# ===========================================================================
+# Step 17. Reference list -> Nature/npj Genomic Medicine style
+# ===========================================================================
+# Source format:
+#   "[1] Warburton D. De novo balanced ...  Am J Hum Genet. 1991;49:995-1013."
+# Target format (Nature-style; npj GM):
+#   "1. Warburton, D. De novo balanced ...  Am J Hum Genet. 49, 995-1013 (1991)."
+#   with journal italic, volume bold.
+#
+# In text:  "[1]" / "[1, 2]" / "[1-3]"  ->  superscript "1" / "1,2" / "1-3"
+
+import re
+from docx.shared import Pt
+
+REF_RE = re.compile(
+    r'^\[(\d+)\]\s+'
+    r'(?P<authors>.+?)\.\s+'           # author list ending in ". "
+    r'(?P<title>.+?)\.\s+'             # title ending in ". "
+    r'(?P<journal>[^.]+)\.\s+'          # journal name ending in ". "
+    r'(?P<year>\d{4})\s*;\s*'           # year;
+    r'(?P<vol>\d+[A-Za-z]*)'            # volume
+    r'(?:\((?P<issue>[^)]+)\))?'        # optional (issue)
+    r'\s*:\s*'
+    r'(?P<pages>[^.]+)\.?\s*$'
+)
+
+def reformat_authors(authors):
+    """Convert 'Warburton D' style to 'Warburton, D.' style.
+    Multiple authors separated by ', ' in the source."""
+    out = []
+    for a in [s.strip() for s in authors.split(',')]:
+        if not a:
+            continue
+        if a.lower() == 'et al':
+            out.append('et al.')
+            continue
+        # Format: "Lastname Initial(s)".  e.g., "Talkowski ME"
+        # Take last token as initials, rest as surname.
+        parts = a.rsplit(' ', 1)
+        if len(parts) == 2 and re.fullmatch(r'[A-Z]{1,5}', parts[1]):
+            initials = '.'.join(list(parts[1])) + '.'
+            out.append(f'{parts[0]}, {initials}')
+        else:
+            out.append(a)
+    if not out:
+        return authors
+    if len(out) == 1:
+        return out[0]
+    if 'et al.' in out:
+        # combine: "First, A. et al."
+        idx = out.index('et al.')
+        # Standard: list first 5 authors then et al.; or just first + et al.
+        # Source already has "et al" appended; keep first 5.
+        kept = out[:5]
+        if 'et al.' not in kept:
+            return ', '.join(kept) + ' et al.'
+        return ', '.join(kept[:-1]) + ' et al.'
+    if len(out) == 2:
+        return f'{out[0]} & {out[1]}'
+    # 3+ authors, no et al.: comma-join with ampersand before last
+    return ', '.join(out[:-1]) + ' & ' + out[-1]
+
+def rewrite_reference_paragraph(para):
+    text = para.text.strip()
+    m = REF_RE.match(text)
+    if not m:
+        return False
+    n = int(m.group(1))
+    authors = reformat_authors(m['authors'])
+    title = m['title']
+    journal = m['journal']
+    year = m['year']
+    vol = m['vol']
+    pages = m['pages'].replace('-', '–')  # en-dash for page ranges
+
+    # Clear paragraph
+    for r in list(para.runs):
+        r._element.getparent().remove(r._element)
+
+    # Build runs: "{n}. {authors}. {title}. " (plain) +
+    #             "{journal}" (italic) + " " (plain) +
+    #             "{vol}" (bold) + ", {pages} ({year})." (plain)
+    r1 = para.add_run(f'{n}. {authors}. {title}. ')
+    r2 = para.add_run(journal); r2.italic = True
+    r3 = para.add_run(' ')
+    r4 = para.add_run(vol); r4.bold = True
+    r5 = para.add_run(f', {pages} ({year}).')
+    return True
+
+# Apply to every paragraph that looks like a reference
+ref_count = 0
+for p in doc.paragraphs:
+    if rewrite_reference_paragraph(p):
+        ref_count += 1
+print(f'Step 17a: {ref_count} reference paragraphs rewritten')
+
+# In-text citations: convert "[N]" / "[N, M]" / "[N-M]" / "[N, M, ...]" to
+# superscript without brackets.
+CITE_RE = re.compile(r'\[\s*(\d+(?:\s*[-,]\s*\d+)*)\s*\]')
+
+def superscriptify_citations(para):
+    """Convert in-text bracket citations in this paragraph to superscript.
+    Skips paragraphs that look like reference list entries."""
+    if re.match(r'^\d+\.\s', para.text):
+        return False
+    if not CITE_RE.search(para.text):
+        return False
+    # Single-run case: easy to handle.
+    if len(para.runs) == 1:
+        return _superscriptify_single_run(para)
+    # Multi-run: scan each run; if a citation is fully inside a run, split that run.
+    runs_to_replace = []
+    for run in list(para.runs):
+        if CITE_RE.search(run.text):
+            runs_to_replace.append(run)
+    if not runs_to_replace:
+        return False
+    for run in runs_to_replace:
+        _split_run_for_citations(para, run)
+    return True
+
+def _superscriptify_single_run(para):
+    run = para.runs[0]
+    txt = run.text
+    matches = list(CITE_RE.finditer(txt))
+    if not matches:
+        return False
+    # Need to rebuild paragraph runs preserving original formatting attributes
+    base_font = run.font
+    bold = run.bold; italic = run.italic
+    name = base_font.name; size = base_font.size
+    # Clear runs
+    for r in list(para.runs):
+        r._element.getparent().remove(r._element)
+    last_end = 0
+    def _new_run(text, sup=False):
+        nr = para.add_run(text)
+        if bold:   nr.bold = True
+        if italic: nr.italic = True
+        if name:   nr.font.name = name
+        if size:   nr.font.size = size
+        if sup:    nr.font.superscript = True
+        return nr
+    for m in matches:
+        if m.start() > last_end:
+            _new_run(txt[last_end:m.start()])
+        # Strip the brackets and whitespace inside
+        inner = m.group(1).replace(' ', '')
+        _new_run(inner, sup=True)
+        last_end = m.end()
+    if last_end < len(txt):
+        _new_run(txt[last_end:])
+    return True
+
+def _split_run_for_citations(para, run):
+    txt = run.text
+    if not CITE_RE.search(txt):
+        return
+    # Insert new runs by splitting around matches at the XML level.
+    matches = list(CITE_RE.finditer(txt))
+    bold = run.bold; italic = run.italic
+    name = run.font.name; size = run.font.size
+    parent = run._element.getparent()
+    idx = list(parent).index(run._element)
+    parent.remove(run._element)
+
+    def _make_run_xml(text, sup=False):
+        # use python-docx convenience by adding a temporary run, then moving
+        tmp = para.add_run(text)
+        if bold:   tmp.bold = True
+        if italic: tmp.italic = True
+        if name:   tmp.font.name = name
+        if size:   tmp.font.size = size
+        if sup:    tmp.font.superscript = True
+        elem = tmp._element
+        elem.getparent().remove(elem)
+        return elem
+
+    new_elems = []
+    last_end = 0
+    for m in matches:
+        if m.start() > last_end:
+            new_elems.append(_make_run_xml(txt[last_end:m.start()]))
+        inner = m.group(1).replace(' ', '')
+        new_elems.append(_make_run_xml(inner, sup=True))
+        last_end = m.end()
+    if last_end < len(txt):
+        new_elems.append(_make_run_xml(txt[last_end:]))
+    for el in new_elems:
+        parent.insert(idx, el)
+        idx += 1
+
+cite_count = 0
+for p in doc.paragraphs:
+    if superscriptify_citations(p):
+        cite_count += 1
+print(f'Step 17b: {cite_count} paragraphs had citations superscripted')
+
+doc.save(OUTPUT)
+print('Saved after Step 17:', OUTPUT)
+
+# ===========================================================================
+# Step 18. Unify font for all body paragraphs
+# ===========================================================================
+# Use Times New Roman 12pt for body, keep heading styles' weights but normalise
+# their typeface too.
+from docx.shared import Pt
+
+BODY_FONT = 'Times New Roman'
+BODY_SIZE = Pt(12)
+HEADING_SIZES = {'Heading 1': Pt(16), 'Heading 2': Pt(14),
+                 'Heading 3': Pt(13), 'Heading 4': Pt(12)}
+
+for p in doc.paragraphs:
+    style_name = p.style.name if p.style else ''
+    target_size = HEADING_SIZES.get(style_name, BODY_SIZE)
+    for run in p.runs:
+        # Don't reset bold/italic/superscript — preserve those
+        run.font.name = BODY_FONT
+        # Force eastAsia font name too (fixes mixed CJK)
+        rpr = run._element.get_or_add_rPr()
+        rfonts = rpr.find(qn('w:rFonts'))
+        if rfonts is None:
+            from docx.oxml import OxmlElement
+            rfonts = OxmlElement('w:rFonts')
+            rpr.insert(0, rfonts)
+        rfonts.set(qn('w:ascii'), BODY_FONT)
+        rfonts.set(qn('w:hAnsi'), BODY_FONT)
+        rfonts.set(qn('w:cs'), BODY_FONT)
+        rfonts.set(qn('w:eastAsia'), BODY_FONT)
+        run.font.size = target_size
+
+# Also normalise font for table cells
+for tbl in doc.tables:
+    for row in tbl.rows:
+        for cell in row.cells:
+            for p in cell.paragraphs:
+                for run in p.runs:
+                    run.font.name = BODY_FONT
+                    rpr = run._element.get_or_add_rPr()
+                    rfonts = rpr.find(qn('w:rFonts'))
+                    if rfonts is None:
+                        from docx.oxml import OxmlElement
+                        rfonts = OxmlElement('w:rFonts')
+                        rpr.insert(0, rfonts)
+                    rfonts.set(qn('w:ascii'), BODY_FONT)
+                    rfonts.set(qn('w:hAnsi'), BODY_FONT)
+                    rfonts.set(qn('w:cs'), BODY_FONT)
+                    rfonts.set(qn('w:eastAsia'), BODY_FONT)
+                    run.font.size = BODY_SIZE
+
+print('Step 18 (font unification): done')
+doc.save(OUTPUT)
+print('Saved:', OUTPUT)
+
+# ===========================================================================
+# Step 19. Build a real Word table for Supplementary Table 6
+# ===========================================================================
+# Find the Sup Table 6 caption paragraph (we inserted it earlier)
+sup6_caption = None
+for p in doc.paragraphs:
+    if p.text.startswith('Supplementary Table 6.'):
+        sup6_caption = p
+        break
+
+if sup6_caption is not None:
+    # Find the footnote paragraph (so we can insert table BETWEEN them)
+    sup6_footnote = None
+    cur = sup6_caption
+    # Walk forward to find footnote
+    for p in doc.paragraphs:
+        if p is sup6_caption:
+            keep_walking = True
+            continue
+        if p.text.startswith('Footnote.') and 'Manta' in p.text and 'Delly' in p.text:
+            sup6_footnote = p
+            break
+
+    # Build table data
+    header = ['Region (GRCh38)', 'Annotation', 'Length (bp)',
+              'Mean depth (×)', 'Manta records (±50 kb)', 'Delly records (±50 kb)']
+    rows = [
+        ('chr17:7,675,995–7,676,272', 'TP53 exon 4 (positive control)', '278',  '154.81', 'n/a', 'n/a'),
+        ('chr7:69,598,475–69,599,962', 'AUTS2 exon 1', '1,488', '35.90', 'n/a', 'n/a'),
+        ('chr7:69,899,286–69,899,498', 'AUTS2 exon 2', '213', '274.85', 'n/a', 'n/a'),
+        ('chr7:70,118,132–70,118,233', 'AUTS2 exon 3', '102', '110.64', 'n/a', 'n/a'),
+        ('chr7:70,134,536–70,134,571', 'AUTS2 exon 4', '36', '160.83', 'n/a', 'n/a'),
+        ('chr7:70,435,752–70,435,781', 'AUTS2 exon 5', '30', '103.77', 'n/a', 'n/a'),
+        ('chr7:70,698,569–70,698,620', 'AUTS2 exon 6', '52', '100.29', 'n/a', 'n/a'),
+        ('chr7:70,762,870–70,763,341', 'AUTS2 exon 7', '472', '195.63', 'n/a', 'n/a'),
+        ('chr7:70,764,752–70,765,005', 'AUTS2 exon 8', '254', '105.28', 'n/a', 'n/a'),
+        ('chr7:70,766,114–70,766,334', 'AUTS2 exon 9', '221', '228.38', 'n/a', 'n/a'),
+        ('chr7:70,768,024–70,768,068', 'AUTS2 exon 10', '45', '63.27', 'n/a', 'n/a'),
+        ('chr7:70,771,549–70,771,644', 'AUTS2 exon 11', '96', '106.09', 'n/a', 'n/a'),
+        ('chr7:70,774,028–70,774,099', 'AUTS2 exon 12', '72', '165.08', 'n/a', 'n/a'),
+        ('chr7:70,775,357–70,775,386', 'AUTS2 exon 13', '30', '123.83', 'n/a', 'n/a'),
+        ('chr7:70,777,103–70,777,174', 'AUTS2 exon 14', '72', '91.78', 'n/a', 'n/a'),
+        ('chr7:70,781,615–70,781,756', 'AUTS2 exon 15', '142', '236.77', 'n/a', 'n/a'),
+        ('chr7:70,784,942–70,785,019', 'AUTS2 exon 16', '78', '91.26', 'n/a', 'n/a'),
+        ('chr7:70,785,955–70,786,038', 'AUTS2 exon 17', '84', '95.80', 'n/a', 'n/a'),
+        ('chr7:70,787,209–70,787,431', 'AUTS2 exon 18', '223', '168.65', 'n/a', 'n/a'),
+        ('chr7:70,789,748–70,793,506', 'AUTS2 exon 19', '3,759', '64.74', 'n/a', 'n/a'),
+        ('chr7:69,938,192–69,939,191', 'LRS breakpoint A (AUTS2 intron 2, ±500 bp)', '1,000', '0.07', '0', '0'),
+        ('chr7:95,720,398–95,721,397', 'LRS breakpoint B (7q21.3, ±500 bp)',         '1,000', '0.16', '0', '0'),
+        ('chr7 (whole chromosome)',     'Total candidate SV records (genome-wide context)', '–', '–',
+            '129 (candidateSV)', '142'),
+    ]
+
+    nrows = len(rows) + 1  # +1 header
+    ncols = len(header)
+
+    # Create table at end of doc, then move it to right after caption
+    tbl = doc.add_table(rows=nrows, cols=ncols)
+    tbl.style = 'Table Grid'
+    # Fill header
+    for j, h in enumerate(header):
+        c = tbl.rows[0].cells[j]
+        c.text = ''  # clear default
+        run = c.paragraphs[0].add_run(h)
+        run.bold = True
+        run.font.name = BODY_FONT
+        run.font.size = Pt(10)
+    # Fill data
+    for i, row in enumerate(rows, start=1):
+        for j, val in enumerate(row):
+            c = tbl.rows[i].cells[j]
+            c.text = ''
+            run = c.paragraphs[0].add_run(val)
+            run.font.name = BODY_FONT
+            run.font.size = Pt(10)
+    # Move table to right after caption paragraph
+    sup6_caption._element.addnext(tbl._element)
+
+print('Step 19 (Sup Table 6 actual table): done')
+doc.save(OUTPUT)
+print('Final saved:', OUTPUT)
+
+# ===========================================================================
+# Step 17c. Cleanup: remove '..' double period after author block
+# (caused by author initials ending with '.' + our ". " separator)
+# ===========================================================================
+import re as _re
+for p in doc.paragraphs:
+    if not _re.match(r'^\d+\.\s', p.text):
+        continue
+    if any(p.text.startswith(pref) for pref in
+           ('1. Introduction', '2. Materials', '3. Results', '4. Discussion')):
+        continue
+    if p.runs and '.. ' in p.runs[0].text:
+        p.runs[0].text = p.runs[0].text.replace('.. ', '. ')
+
+doc.save(OUTPUT)
+print('Step 17c (double-period cleanup): done')
