@@ -158,20 +158,100 @@ supporting reads rather than a caller-level limitation.
 
 ---
 
-## 5. Reproducibility — pinned commands
+## 5. Supplementary Figure proposal — IGV coverage comparison
+
+A four-panel Supplementary Figure visualises the read-level basis for the
+"assay-level rather than analytical" conclusion. Generated with an IGV
+batch script (`igv_screenshots.batch`) for full reproducibility.
+
+### Figure layout
+
+| Panel | Locus (GRCh38) | Annotation | Expected appearance |
+|---|---|---|---|
+| **A** | chr17:7,675,500–7,676,800 | TP53 exon 4 (positive control) | Tall, uniform pile-up of paired reads (~155×) |
+| **B** | chr7:69,898,800–69,900,000 | AUTS2 exon 2 (captured) | Tall pile-up (~275×) |
+| **C** | chr7:69,933,691–69,943,691 | AUTS2 intron 2 LRS breakpoint, ±5 kb | Essentially blank coverage track (~0.07×); centre marker at chr7:69,938,691 |
+| **D** | chr7:95,715,897–95,725,897 | 7q21.3 LRS breakpoint, ±5 kb | Essentially blank coverage track (~0.16×); centre marker at chr7:95,720,897 |
+| (E) | chr7:69,598,000–70,794,000 | Optional gene-wide AUTS2 view | Discrete exonic coverage spikes separated by zero-coverage introns |
+
+### Suggested figure caption
+
+> **Supplementary Figure Y. WES read-level coverage at the LRS-defined Case 2
+> inversion breakpoints versus captured exonic controls.** Integrative
+> Genomics Viewer (IGV v2.x) snapshots from the original Case 2 WES BAM
+> aligned to GRCh38 + hs38d1 decoys + HLA contigs. (**A**) TP53 exon 4
+> (chr17:7,675,994–7,676,272), a ubiquitously captured positive-control
+> exon, showing 154.81× mean read depth. (**B**) AUTS2 exon 2
+> (chr7:69,899,286–69,899,498), a captured AUTS2 exon, showing 274.85×
+> mean depth. (**C**) The AUTS2 intron 2 LRS-defined breakpoint
+> (chr7:69,938,691, red marker) shown with ±5 kb of flanking sequence;
+> mean depth across the central 1 kb is 0.07×. (**D**) The 7q21.3
+> LRS-defined breakpoint partner (chr7:95,720,897, red marker) shown
+> with ±5 kb of flanking sequence; mean depth across the central 1 kb is
+> 0.16×. The contrast illustrates that the inversion breakpoints fall
+> outside exome capture territory and are therefore inaccessible to
+> short-read WES at the read level, regardless of variant caller.
+
+### How to generate (macOS)
+
+```bash
+brew install --cask igv          # install IGV Desktop if needed
+igv -b igv_screenshots.batch     # produces five PNGs in OUT_DIR
+```
+
+For higher-resolution / publication-grade output, open IGV Desktop
+manually, set Preferences → Tracks → Track Height to 250 px and
+File → Save SVG/Image at each coordinate.
+
+---
+
+## 6. Independent caller verification with Delly (placeholder for results)
+
+To address the residual concern that the negative Manta result might
+reflect Manta-specific behaviour rather than a true absence of evidence,
+we additionally re-analyzed the Case 2 WES BAM with Delly v1.2.6
+(`dellytools/delly:v1.2.6`), an independently-developed structural-variant
+caller that combines paired-end and split-read evidence (Rausch et al.,
+Bioinformatics 2012). Delly was run with default parameters
+(`delly call -g <REF> -o <OUT.bcf> <BAM>`), with the same reference
+(GRCh38 + hs38d1 + HLA) and without an exclude list. SV records within
+±50 kb of either LRS-defined breakpoint were enumerated, and INFO/CHR2
+and INFO/END fields were inspected for any pair joining the two breakpoint
+windows.
+
+> _Results to fill in after `run_delly_case2.sh` completes:_
+>
+> - Total Delly SV records genome-wide: **N**
+> - Records on chr7: **N**
+> - Records within ±50 kb of chr7:69,938,691: **N**
+> - Records within ±50 kb of chr7:95,720,897: **N**
+> - Records pairing the two windows (INFO/CHR2 or BND ALT mate): **N**
+
+If — as expected — Delly returns 0 records in the breakpoint windows,
+add the following sentence to the Discussion / Reviewer response:
+
+> "An independent re-analysis with Delly v1.2.6 produced concordant
+> negative results in the same windows, confirming that the absence of
+> evidence is shared across SV callers and reflects the underlying read
+> distribution rather than caller-specific behaviour."
+
+---
+
+## 7. Reproducibility — pinned commands
 
 ```text
 Reference : GRCh38_full_analysis_set_plus_decoy_hla.fa
             (1000 Genomes FTP /vol1/ftp/technical/reference/GRCh38_reference_genome/)
-Caller    : Manta 1.6.0
-Image     : quay.io/biocontainers/manta:1.6.0--h9ee0642_1 (linux/amd64)
-Config    : configManta.py --bam <BAM> --referenceFasta <REF> \
-                           --runDir <RUN> --exome
-Run       : runWorkflow.py -j 8
-Wall-time : 150 s
+Manta     : 1.6.0   image quay.io/biocontainers/manta:1.6.0--h9ee0642_1
+            configManta.py --bam <BAM> --referenceFasta <REF> --runDir <RUN> --exome
+            runWorkflow.py -j 8           wall-time 150 s
+Delly     : 1.2.6   image dellytools/delly:v1.2.6
+            delly call -g <REF> -o <OUT.bcf> <BAM>
 ```
 
 Scripts in this repository:
 - `download_grch38_analysis_set.sh` — fetches the matching reference
 - `run_manta_case2.sh` — runs Manta + post-hoc ROI filtering
+- `run_delly_case2.sh` — runs Delly + post-hoc ROI filtering
 - `compute_auts2_exon_depth.sh` — generates the per-region depth table
+- `igv_screenshots.batch` — IGV batch script for the supplementary figure
