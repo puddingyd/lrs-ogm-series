@@ -18,7 +18,7 @@ set -euo pipefail
 # ============================================================================
 
 # Input BAM (sorted, indexed, aligned to the same reference as $REF below)
-BAM="/Users/changym/Desktop/LR_WGS/Case2/WES_raw_d/AA001181/AA001181.bam"
+BAM="/Users/changym/Desktop/LR_WGS/Case2/WES/AA001181/AA001181.bam"
 
 # Reference FASTA + .fai (must match the BAM build; Case 2 LRS used GRCh38)
 REF="/Volumes/genetics/humandb/hg38/hg38.fa"
