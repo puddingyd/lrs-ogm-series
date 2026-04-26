@@ -1122,3 +1122,247 @@ for p in doc.paragraphs:
 print('Step 23 (round-3 refinements + abbreviation tidy): done')
 doc.save(OUTPUT)
 print('Saved:', OUTPUT)
+
+# ===========================================================================
+# Step 24. Round-4 refinements (per independent peer review)
+# ===========================================================================
+
+# Save round-4 to a NEW filename so the round-3 file is preserved.
+import shutil
+ROUND4_OUT = 'LRS_OGM_series_2026026_revised_v2.docx'
+
+# (Round 4 starts from current `doc` state)
+
+# ----- A items ------------------------------------------------------------
+
+# (A1) Reference list: clean stray markdown italic markers (`*`) introduced
+# during my earlier Nature-style reformat. The pattern is `**Word** Word*` etc.
+import re as _re
+def strip_md_artefacts_in_runs(p):
+    """Remove stray * characters in runs that crept in during reformat."""
+    for r in p.runs:
+        if r.text and ('*' in r.text):
+            r.text = r.text.replace('*', '')
+
+for p in doc.paragraphs:
+    if _re.match(r'^\d+\.\s', p.text) and any('*' in r.text for r in p.runs):
+        # Only references (numbered "1. " entries) with stray *
+        strip_md_artefacts_in_runs(p)
+
+# (A2) Figure call-outs: e.g., "(Figure 1B)" sometimes acquired stray
+# bold markdown markers. Same fix as above is sufficient.
+for p in doc.paragraphs:
+    text = p.text
+    if 'Figure' in text and '*' in text:
+        for r in p.runs:
+            if r.text and '*' in r.text and 'Figure' in (r.text or ''):
+                r.text = r.text.replace('*', '')
+
+# (A3) Limitation paragraph numbering: the user noted broken sequence
+# (First, Second, Third, ... Finally, Fifth). Restore proper numbering.
+p_lim = find_para('Our study has several limitations.')
+if p_lim:
+    # Fix the order: First, Second, Third, Fourth, Finally
+    replace_in_para(p_lim, 'Finally,', 'Fourth,')
+    replace_in_para(p_lim, ' Fifth, ', ' Finally, ')
+
+# (A4) Methods §2.6.2: empty parentheses "the PacBio WGS Variant Pipeline ()"
+# Add the URL.
+replace_all_in_doc(
+    'the PacBio WGS Variant Pipeline ()',
+    'the PacBio WGS Variant Pipeline (https://github.com/PacificBiosciences/HiFi-human-WGS-WDL, v2.0.0)'
+)
+replace_all_in_doc(
+    'the PacBio WGS Variant Pipeline (https://github.com/PacificBiosciences/HiFi-human-WGS-WDL).',
+    'the PacBio WGS Variant Pipeline (https://github.com/PacificBiosciences/HiFi-human-WGS-WDL, v2.0.0).'
+)
+
+# (A5) Capture kit info — add to Supplementary as a new note paragraph.
+# Insert after the existing Sup Table 6 footnote.
+p_sup6_foot = None
+for p in doc.paragraphs:
+    if p.text.startswith('Footnote.') and 'Manta' in p.text and 'Delly' in p.text:
+        p_sup6_foot = p
+        break
+if p_sup6_foot is not None:
+    extra = ('Note. The original Case 2 WES library was prepared with the Roche '
+             'KAPA HyperExome Plus capture kit (Roche Sequencing Solutions). The '
+             'AUTS2 intron 2 breakpoint (chr7:69,938,691) and the 7q21.3 partner '
+             'breakpoint (chr7:95,720,897) both lie outside the kit\'s capture '
+             'target intervals, which explains the near-zero local read depth and '
+             'the absence of any short-read SV-caller signal at these positions.')
+    insert_para_after(p_sup6_foot, extra, style='Normal')
+
+# (A6) Gene italics sweep — italicize gene symbols in body text where they
+# appear in plain-text runs. We act conservatively: only apply when the run
+# contains the exact gene symbol token (word boundary), and only in body
+# paragraphs (not figure legends or references).
+GENE_SYMBOLS = ['AUTS2', 'CNTNAP2', 'GATA4', 'SOX7', 'TNKS', 'MCPH1',
+                'BRAF', 'AGK', 'CLCN1', 'TBXAS1', 'WEE2', 'SSBP1',
+                'TAS2R38', 'PRSS1', 'PRSS2', 'TRPV6', 'KEL', 'CASP2',
+                'NOBOX', 'TPK1', 'SLC37A3', 'FMR1', 'TP53', 'DLE-1',
+                'HiFiCNV']  # HiFiCNV is a tool not a gene; exclude later
+
+def italicize_genes_in_para(p):
+    if not p.runs:
+        return
+    in_legend = (p.text.startswith('Figure') or
+                 (len(p.text) > 2 and p.text[1:3] == '. ' and p.text[0].isalpha()))
+    in_ref = bool(_re.match(r'^\d+\.\s', p.text))
+    if in_ref:
+        return  # don't touch reference list
+    # Build per-run italicization
+    for run in list(p.runs):
+        text = run.text
+        if not text:
+            continue
+        # Find any gene symbol with word boundary; if found, split run
+        pattern = _re.compile(r'\b(' + '|'.join(_re.escape(g) for g in GENE_SYMBOLS
+                                                 if g not in ('HiFiCNV', 'DLE-1')) + r')\b')
+        if not pattern.search(text):
+            continue
+        # Only act if this run is currently NOT italic (we don't double-style)
+        if run.italic:
+            continue
+        # Split the run into pieces
+        parts = []
+        last = 0
+        for m in pattern.finditer(text):
+            if m.start() > last:
+                parts.append(('plain', text[last:m.start()]))
+            parts.append(('italic', m.group()))
+            last = m.end()
+        if last < len(text):
+            parts.append(('plain', text[last:]))
+        # Replace this run with the new sequence
+        # Keep formatting (font name, size, bold) consistent
+        rpr = run._element.find(qn('w:rPr'))
+        parent = run._element.getparent()
+        idx = list(parent).index(run._element)
+        parent.remove(run._element)
+        for kind, t in parts:
+            new_run = p.add_run(t)
+            if rpr is not None:
+                new_rpr = new_run._element.find(qn('w:rPr'))
+                if new_rpr is not None:
+                    new_rpr.getparent().remove(new_rpr)
+                new_run._element.insert(0, _re_clone_rpr(rpr))
+            if kind == 'italic':
+                new_run.italic = True
+            # Move to original position
+            new_run._element.getparent().remove(new_run._element)
+            parent.insert(idx, new_run._element)
+            idx += 1
+
+def _re_clone_rpr(rpr):
+    from copy import deepcopy
+    return deepcopy(rpr)
+
+for p in doc.paragraphs:
+    italicize_genes_in_para(p)
+
+# ----- B items ------------------------------------------------------------
+
+# (B1) Case 1 mechanism — soften "we determined" / "supports a model" to
+# "is compatible with"; flag MMBIR/FoSTeS as alternative.
+replace_all_in_doc(
+    'This configuration supports non-allelic homologous recombination (NAHR) mediated by REPD and REPP as the source of the inversion.',
+    'This configuration is compatible with non-allelic homologous recombination (NAHR) between REPD and REPP as the initiating event of the inversion.'
+)
+replace_all_in_doc(
+    'support a model in which the inversion was initiated by NAHR between REPP and REPD, with subsequent error-prone repair leading to deletion of the intervening segments through MMEJ.',
+    'are compatible with a two-step model in which an NAHR event between REPP and REPD generated the inversion and subsequent error-prone repair (MMEJ, or alternatively replication-based mechanisms such as FoSTeS / MMBIR) yielded the flanking deletions.'
+)
+
+# (B2) Case 2 Figure 2F title & legend — change "MIR3-mediated mechanism"
+# to "proposed NHEJ mechanism with nearby MIR3 elements"
+replace_all_in_doc(
+    'Figure 2. Chromosome 7 paracentric inversion of Case 2 resolved by long-read sequencing (LRS) and optical genome mapping (OGM) with proposed MIR3-mediated mechanism',
+    'Figure 2. Chromosome 7 paracentric inversion of Case 2 resolved by long-read sequencing (LRS) and optical genome mapping (OGM); proposed non-homologous end joining (NHEJ) mechanism with nearby MIR3 SINE elements.'
+)
+replace_all_in_doc(
+    'F. Proposed mechanism. Two Short Interspersed Nuclear Element (SINE) fragments annotated by RepeatMasker as MIR3 (Mammalian-wide Interspersed Repeat family 3), one located at 5,324 bp proximal to breakpoint A and the other at 2,274 bp distal to breakpoint D (red boxes; arrowheads indicate orientation), may have facilitated recombination. Insets show the junctional sequences, which share only a single-base (T) homology at the breakpoints.',
+    'F. Proposed mechanism. The single-base (T) microhomology at the junctions (insets) is most consistent with non-homologous end joining (NHEJ). Two Short Interspersed Nuclear Element (SINE) fragments annotated by RepeatMasker as MIR3 (Mammalian-wide Interspersed Repeat family 3) lie 5,324 bp proximal to breakpoint A and 2,274 bp distal to breakpoint D (red boxes; arrowheads indicate orientation); these elements do not span the junctions but may have predisposed the locus to ectopic strand exchange.'
+)
+
+# (B3) Case 3 chromoanagenesis — harmonize Abstract / Results / Discussion
+# to "complex genomic rearrangement (CGR) with features suggestive of chromoanagenesis".
+# Abstract: change "complex multi-chromosomal rearrangement reminiscent of chromoanagenesis"
+replace_all_in_doc(
+    'LRS and OGM resolved a complex multi-chromosomal rearrangement reminiscent of chromoanagenesis',
+    'LRS and OGM resolved a complex multi-chromosomal genomic rearrangement (CGR) with features suggestive of chromoanagenesis'
+)
+# Discussion: similar wording softening (don't double-modify if already done)
+replace_all_in_doc(
+    'is highly reminiscent of chromoanagenesis — a class of complex genomic rearrangement (CGR) that includes chromothripsis and chromoplexy',
+    'shows features suggestive of chromoanagenesis (a class of complex genomic rearrangement, CGR, that includes chromothripsis and chromoplexy)'
+)
+
+# (B4) Case 3 7q deletion contribution — change "together explained" to
+# "together contribute to"
+replace_all_in_doc(
+    'CNTNAP2 truncation and a cryptic 5.4-Mb 7q34–q35 deletion together explained his phenotype',
+    'CNTNAP2 truncation and a cryptic 5.4-Mb 7q34–q35 deletion together contribute to his phenotype'
+)
+replace_all_in_doc(
+    'CNTNAP2 disruption together with a 5.4-Mb 7q34–q35 deletion plausibly explained his phenotype',
+    'CNTNAP2 disruption together with a 5.4-Mb 7q34–q35 deletion together contribute to his phenotype'
+)
+
+# (B5) Manta/Delly Discussion: soften assay-vs-analytical wording into a
+# continuum and cite Cameron / Belyeu benchmarks.
+replace_all_in_doc(
+    'demonstrates that the AUTS2 intron 2 breakpoint and its 7q21.3 partner lie outside exome capture territory and are inaccessible to short-read WES at the read level, regardless of the variant caller applied.',
+    'indicates that the AUTS2 intron 2 breakpoint and its 7q21.3 partner lie at the assay-sensitivity end of a continuum: short-read WES has both limited capture coverage at intronic positions and reduced caller sensitivity for inversions in repeat-rich contexts [REF_CAMERON, REF_BELYEU], so neither off-target reads nor a more permissive caller can reliably recover this event.'
+)
+
+# (B6) De novo limitation — add base-pair-level confirmation caveat
+replace_all_in_doc(
+    'Future cohorts incorporating routine trio confirmation would further strengthen inference of de novo origin and would exclude rare instances of low-level parental mosaicism.',
+    'In each proband, de novo status is therefore based on parental karyotyping (resolution of several megabases) and was not molecularly confirmed at base-pair resolution; future cohorts incorporating routine trio LRS or junction-spanning Sanger confirmation would strengthen the inference of de novo origin and exclude rare instances of low-level parental mosaicism.'
+)
+
+# (Add the two new references for B5)
+last_ref = None
+for p in doc.paragraphs:
+    if p.text.startswith('44.') and 'Rausch' in p.text:
+        last_ref = p
+        break
+if last_ref is not None:
+    new_refs = [
+        '45. Cameron, D.L., Di Stefano, L. & Papenfuss, A.T. Comprehensive evaluation and characterisation of short read general-purpose structural variant calling software. Nat Commun 10, 3240 (2019).',
+        '46. Belyeu, J.R., Brand, H., Wang, H., Zhao, X., Pedersen, B.S., Layer, R.M. et al. De novo structural mutation rates and gamete-of-origin biases revealed through genome sequencing of 2,396 families. Am J Hum Genet 108, 597–607 (2021).',
+    ]
+    anchor = last_ref
+    for txt in new_refs:
+        anchor = insert_para_after(anchor, txt, style='Normal')
+
+replace_all_in_doc('[REF_CAMERON, REF_BELYEU]', '45,46')
+
+# ----- Save to new file (preserve previous round) -----
+print('Step 24 (round-4 per independent reviewer): done')
+doc.save(ROUND4_OUT)
+print('Saved (NEW file):', ROUND4_OUT)
+
+# Verification
+chk = docx.Document(ROUND4_OUT)
+verify = [
+    ('PacBio WGS Variant Pipeline URL filled', lambda d: any('HiFi-human-WGS-WDL, v2.0.0' in p.text for p in d.paragraphs)),
+    ('Capture kit Note added', lambda d: any('Roche KAPA HyperExome Plus capture kit' in p.text for p in d.paragraphs)),
+    ('Case 1 mechanism softened ("compatible")', lambda d: any('compatible with non-allelic homologous recombination' in p.text for p in d.paragraphs)),
+    ('Case 2 Fig 2 title shows NHEJ', lambda d: any('proposed non-homologous end joining (NHEJ) mechanism with nearby MIR3' in p.text for p in d.paragraphs)),
+    ('Abstract uses "CGR with features suggestive of chromoanagenesis"', lambda d: any('CGR) with features suggestive of chromoanagenesis' in p.text for p in d.paragraphs)),
+    ('"together contribute to his phenotype"', lambda d: any('together contribute to his phenotype' in p.text for p in d.paragraphs)),
+    ('Manta/Delly continuum + refs', lambda d: any('45,46' in p.text for p in d.paragraphs)),
+    ('De novo base-pair caveat', lambda d: any('not molecularly confirmed at base-pair resolution' in p.text for p in d.paragraphs)),
+    ('Ref [45] Cameron', lambda d: any(p.text.startswith('45. Cameron') for p in d.paragraphs)),
+    ('Ref [46] Belyeu', lambda d: any(p.text.startswith('46. Belyeu') for p in d.paragraphs)),
+]
+print()
+print('=== Round-4 verification ===')
+for name, fn in verify:
+    try:
+        ok = fn(chk)
+        print(f'  [{("OK" if ok else "FAIL")}] {name}')
+    except Exception as e:
+        print(f'  [ERR] {name}: {e}')
