@@ -22,7 +22,7 @@ trap 'rc=$?; echo "ERROR: failed at line $LINENO (exit $rc): $BASH_COMMAND" >&2;
 BAM="/Users/changym/Desktop/LR_WGS/Case2/WES/AA001181/AA001181.bam"
 
 # Reference FASTA + .fai (must match the BAM build; Case 2 LRS used GRCh38)
-REF="/Volumes/genetics/humandb/hg38/hg38.fa"
+REF="/Users/changym/Desktop/LR_WGS/Case2/WES/Manta/ref/GRCh38_full_analysis_set_plus_decoy_hla.fa"
 
 # OPTIONAL exome capture target BED (Roche KAPA HyperExome).
 # Leave EMPTY ("") to skip --callRegions (recommended for finding the
