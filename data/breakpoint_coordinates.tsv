@@ -1,0 +1,15 @@
+case	variant_id	chrom1	start1	end1	chrom2	start2	end2	size_bp	sv_type	genes_affected	mechanism	acmg_classification	acmg_score
+1	case1_8p23.1_microdeletion	chr8	8174929	10727966	chr8	8174929	10727966	2553037	deletion	8p23.1 microdeletion syndrome region (SOX7, TNKS deleted; GATA4 spared)	NAHR (REPP/REPD); 4-bp microhomology at distal junctions	Pathogenic	+1.00
+1	case1_8p22_deletion	chr8	12477756	16798965	chr8	12477756	16798965	4321209	deletion	~40 protein-coding genes (incl. TUSC3); no established single HI gene	NAHR (REPP/REPD); MMEJ at flanking junctions	Likely pathogenic	+0.55
+1	case1_8p_inversion	chr8	10727966	12477756	chr8	10727966	12477756	1749790	inversion	None at breakpoints (copy-neutral)	NAHR (REPP/REPD)	VUS	0.00
+2	case2_AUTS2_disrupting_inv	chr7	69938691	69938691	chr7	95720897	95720897	NA	inversion (copy-neutral)	AUTS2 (intron 2 truncated by proximal breakpoint)	NHEJ (single-bp T microhomology); MIR3 SINE elements 5.3 kb / 2.3 kb away	Pathogenic	NA (PVS1+PM6+PP4)
+3	case3_t2_13_junction	chr2	190165024	190165024	chr13	89823743	89823743	NA	translocation breakend	No established disease gene at junctions	chromoanagenesis-like CGR	VUS	0
+3	case3_2q33_inversion	chr2	195916610	204194605	chr2	195916610	204194605	8277995	inversion (copy-neutral)	No HI gene at breakpoints	chromoanagenesis-like CGR	VUS	0.00
+3	case3_2q33.3_1kb_deletion	chr2	208167781	208168760	chr2	208167781	208168760	979	deletion	No protein-coding gene	chromoanagenesis-like CGR	VUS	0
+3	case3_2q33.3_2q34_segment_insertion	chr2	208561732	212365904	chr2	208561732	212365904	3804172	segment relocation (copy-neutral)	No HI gene at breakpoints	chromoanagenesis-like CGR	VUS	0.00
+3	case3_2q33.3_local_inversion	chr2	208484607	208561732	chr2	208484607	208561732	77125	inversion (copy-neutral)	No gene disruption identified	chromoanagenesis-like CGR	VUS	0.00
+3	case3_13q21.31_fragment_translocation	chr13	62374243	63090549	chr2	212365904	NA	716306	segment relocation	Gene-poor region	chromoanagenesis-like CGR	VUS	0
+3	case3_t5_7_junction	chr5	63691635	63691635	chr7	134079073	134079073	NA	translocation breakend	No established disease gene at junctions	chromoanagenesis-like CGR	VUS	0
+3	case3_7q34_q35_deletion	chr7	139635053	145048896	chr7	139635053	145048896	5413843	deletion	15 OMIM genes (BRAF, AGK, CLCN1, TBXAS1, WEE2, SSBP1, TAS2R38, PRSS1, PRSS2, TRPV6, KEL, CASP2, NOBOX, TPK1, SLC37A3); ~45 protein-coding	chromoanagenesis-like CGR	Likely pathogenic	+0.60
+3	case3_7q35_inversion_CNTNAP2	chr7	145048896	146600257	chr7	145048896	146600257	1551361	inversion (copy-neutral)	CNTNAP2 (truncated by distal breakpoint)	chromoanagenesis-like CGR	Likely pathogenic	NA (PVS1_moderate+PM6+PP4)
+3	case3_4q28.3_deletion	chr4	130337827	132440009	chr4	130337827	132440009	2102182	deletion	No OMIM disease gene; gene-poor region	independent / unrelated	VUS, likely benign	0.00
