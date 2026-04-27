@@ -1,0 +1,12 @@
+AnnotSV_ID	SV_chrom	SV_start	SV_end	SV_length	SV_type	Gene_name	Exomiser_gene_pheno_score	OMIM_phenotype	OMIM_morbid	P_gain_source	P_loss_source	P_ins_source	AnnotSV_ranking_score	ACMG_class	PhenoGenius_phenotype
+1_16862001_16938000_DUP_1	1	16862001	16938000	72000	DUP	CROCC	0.4129							full=3	
+2_87124001_87804000_DUP_1	2	87124001	87804000	676000	DUP	RGPD2	0.7799							full=3	
+17_46286001_46698000_DEL_1	17	46286001	46698000	408000	DEL	NSF	0.8987	Developmental and epileptic encephalopathy 96, 619340 (3) AD	yes					full=5	Microcephaly, Global developmental delay, Seizure
+10_79712001_79746000_DEL_1	10	79712001	79746000	30000	DEL	NUTM2B-AS1	0.0000	?Oculopharyngeal myopathy with leukoencephalopathy 1, 618637 (3) AD						full=3	
+1_149466001_149560000_DUP_1	1	149466001	149560000	90000	DUP	NOTCH2NLC	0.0000	Neuronal intranuclear inclusion disease, 603472 (3) AD;Oculopharyngodistal myopathy 3, 619473 (3) AD;Tremor, hereditary essential, 6, 618866 (3) AD	yes					full=3	Seizure
+12_7824001_8002000_DEL_1	12	7824001	8002000	174000	DEL	SLC2A14	0.7770							full=3	
+8_7878001_10710000_DEL_1	8	7878001	10710000	2828000	DEL	ERI1	0.7667	Hoxha-Aliu syndrome, 620662 (3) AR;Spondyloepimetaphyseal dysplasia, Guo-Campeau type, 620663 (3) AR	yes		morbid:ERI1			full=5	Microcephaly, Global developmental delay
+8_12196001_16784000_DEL_1	8	12196001	16784000	4584000	DEL	DLC1	0.5703	Colorectal cancer, somatic, 114500 (3)	yes		morbid:DLC1			full=5	
+14_73532001_73558000_DEL_1	14	73532001	73558000	22000	DEL	ACOT1	0.4041							full=3	
+17_36122001_36234000_DUP_1	17	36122001	36234000	108000	DUP	CCL3L3	0.6456							full=3	
+15_28306001_28476000_DUP_1	15	28306001	28476000	166000	DUP	HERC2	0.8447	Intellectual developmental disorder, AR 38, 615516 (3) AR;[Skin/hair/eye pigmentation 1, blond/brown hair], 227220 (3) AR;[Skin/hair/eye pigmentation 1, blue/nonblue eyes], 227220 (3) AR	yes					full=3	Global developmental delay, Seizure

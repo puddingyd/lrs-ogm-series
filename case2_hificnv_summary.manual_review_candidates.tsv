@@ -1,0 +1,12 @@
+AnnotSV_ID	SV_chrom	SV_start	SV_end	SV_length	SV_type	Gene_name	Exomiser_gene_pheno_score	OMIM_phenotype	OMIM_morbid	P_gain_source	P_loss_source	P_ins_source	AnnotSV_ranking_score	ACMG_class	PhenoGenius_phenotype
+5_70984001_71076000_DEL_1	5	70984001	71076000	88000	DEL	NAIP	0.4665							full=1	
+16_70116001_70176000_DUP_1	16	70116001	70176000	56000	DUP	PDPR	0.3377							full=1	
+15_28240001_28476000_DUP_1	15	28240001	28476000	232000	DUP	HERC2	0.7816	Intellectual developmental disorder, AR 38, 615516 (3) AR;[Skin/hair/eye pigmentation 1, blond/brown hair], 227220 (3) AR;[Skin/hair/eye pigmentation 1, blue/nonblue eyes], 227220 (3) AR	yes	dbVar:nssv18789915;dbVar:nssv18830845				full=5	Autism, Delayed speech and language development, Intellectual disability
+10_79712001_79746000_DEL_1	10	79712001	79746000	30000	DEL	NUTM2B-AS1	0.0000	?Oculopharyngeal myopathy with leukoencephalopathy 1, 618637 (3) AD						full=1	Delayed speech and language development
+8_7824001_8232000_DEL_1	8	7824001	8232000	404000	DEL	DEFB106A	0.3377							full=3	
+1_688001_950000_DUP_1	1	688001	950000	258000	DUP	SAMD11	0.3683							full=3	
+7_142064001_142094000_DEL_1	7	142064001	142094000	26000	DEL	MGAM	0.2464							full=1	
+14_73532001_73558000_DEL_1	14	73532001	73558000	22000	DEL	ACOT1	0.3449							full=3	
+2_130568001_130642000_DUP_1	2	130568001	130642000	70000	DUP	CFC1	0.0000	Heterotaxy, visceral, 2, autosomal, 605376 (3) AD	yes		morbid:CFC1			full=3	
+17_36108001_36252000_DUP_1	17	36108001	36252000	140000	DUP	CCL3L3	0.4738							full=3	
+15_21860001_22216000_DEL_1	15	21860001	22216000	352000	DEL	OR4M2	0.3316							full=3	

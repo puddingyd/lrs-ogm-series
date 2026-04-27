@@ -1,0 +1,16 @@
+AnnotSV_ID	SV_chrom	SV_start	SV_end	SV_length	SV_type	Gene_name	Exomiser_gene_pheno_score	OMIM_phenotype	OMIM_morbid	P_gain_source	P_loss_source	P_ins_source	AnnotSV_ranking_score	ACMG_class	PhenoGenius_phenotype
+10_46700001_46986000_DUP_1	10	46700001	46986000	282000	DUP	PTPN20	0.4550							full=1	
+8_7326001_8206000_DUP_1	8	7326001	8206000	876000	DUP	USP17L1	0.3941							full=3	
+2_130564001_130648000_DUP_1	2	130564001	130648000	80000	DUP	CFC1	0.3995	Heterotaxy, visceral, 2, autosomal, 605376 (3) AD	yes		morbid:CFC1			full=3	
+7_139634001_145050000_DEL_1	7	139634001	145050000	5412000	DEL	TBXAS1	0.3573	Ghosal hematodiaphyseal syndrome, 231095 (3) AR	yes		dbVar:nssv15775017;morbid:TBXAS1			full=5	Delayed speech and language development
+17_46286001_46440000_DEL_1	17	46286001	46440000	150000	DEL	ARL17B	0.2936							full=1	
+17_36160001_36372000_DUP_1	17	36160001	36372000	208000	DUP	CCL3L3	0.3932							full=3	
+5_69704001_70950000_DEL_1	5	69704001	70950000	1242000	DEL	SMN1	0.4746	Spinal muscular atrophy-1, 253300 (3) AR;Spinal muscular atrophy-2, 253550 (3) AR;Spinal muscular atrophy-3, 253400 (3) AR;Spinal muscular atrophy-4, 271150 (3) AR	yes		CLN:3496768;CLN:424702;CLN:679853;dbVar:nssv17173226			full=5	Delayed speech and language development
+2_110336001_110422000_DUP_1	2	110336001	110422000	82000	DUP	LIMS4	0.2704							full=3	
+8_12120001_12226000_DUP_1	8	12120001	12226000	102000	DUP	USP17L7	0.3941							full=1	
+1_144826001_145116000_DEL_1	1	144826001	145116000	286000	DEL	SRGAP2B	0.2773							full=3	
+15_21496001_21862000_DUP_1	15	21496001	21862000	362000	DUP	OR4M2B	0.4245							full=3	
+15_28296001_28414000_DUP_1	15	28296001	28414000	114000	DUP	HERC2	0.7042	Intellectual developmental disorder, AR 38, 615516 (3) AR;[Skin/hair/eye pigmentation 1, blond/brown hair], 227220 (3) AR;[Skin/hair/eye pigmentation 1, blue/nonblue eyes], 227220 (3) AR	yes	dbVar:nssv18789915				full=5	Delayed speech and language development, Micropenis, Cryptorchidism, Autism, Global developmental delay
+15_30274001_30522000_DEL_1	15	30274001	30522000	244000	DEL	CHRFAM7A	0.4652							full=1	
+15_21912001_22502000_DUP_1	15	21912001	22502000	586000	DUP	OR4M2	0.4245							full=3	
+X_102212001_102274000_DEL_1	X	102212001	102274000	58000	DEL	NXF2	0.4708							full=3	
