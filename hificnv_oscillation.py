@@ -127,34 +127,38 @@ def main():
         if not bins:
             return f'{label}\t0\t0\t0\t-\tFalse\tno data'
         states = [discretise(cn) for _, _, cn in bins]
-        # Smooth singleton outliers (1-bin-wide)
-        smoothed = list(states)
-        for i in range(1, len(smoothed)-1):
-            if smoothed[i-1] == smoothed[i+1] and smoothed[i] != smoothed[i-1]:
-                smoothed[i] = smoothed[i-1]
-        distinct = sorted(set(smoothed))
-        # Count transitions (changes in state)
-        transitions = sum(1 for i in range(1, len(smoothed)) if smoothed[i] != smoothed[i-1])
-        # Oscillation = repeated alternation between 2 (or 3) states
-        # Build run-length encoding then detect alternation
+        # NOTE: HiFiCNV's copynum.bedgraph is SEGMENT-LEVEL, not uniformly
+        # binned. Each row is already an aggregated segment of variable size
+        # (often megabases). Singleton-bin outliers are therefore real CN
+        # changes, not noise — do NOT smooth them.
+        distinct = sorted(set(states))
+        # Number of transitions between consecutive segments
+        transitions = sum(1 for i in range(1, len(states))
+                          if states[i] != states[i-1])
+        # Build run-length encoding of distinct copy-number runs
         rle = []
-        for s in smoothed:
+        for s in states:
             if rle and rle[-1][0] == s:
                 rle[-1] = (s, rle[-1][1] + 1)
             else:
                 rle.append((s, 1))
         rle_states = [s for s, _ in rle]
-        # Korbel & Campbell: oscillation if >= 4 alternating segments between
-        # 2-3 distinct states, with each segment >= 2 bins
-        long_segments = [s for s, n in rle if n >= 2]
-        oscillation = (len(long_segments) >= 4 and
-                       2 <= len(set(long_segments)) <= 3)
-        pattern = ' -> '.join(str(s) for s in rle_states[:20])
-        if len(rle_states) > 20:
-            pattern += f' ... ({len(rle_states)} segments total)'
-        verdict = ('OSCILLATION pattern (Korbel-Campbell C2 satisfied)'
+
+        # Korbel & Campbell C2: alternation between 2 (or rarely 3) discrete
+        # copy-number levels. Here we require:
+        #   - 2 or 3 distinct CN levels
+        #   - ≥4 transitions (i.e., at least 2 full A→B→A cycles)
+        # AND clusters of breakpoints in this region.
+        oscillation = (2 <= len(distinct) <= 3) and (transitions >= 4)
+
+        pattern = ' → '.join(str(s) for s in rle_states[:25])
+        if len(rle_states) > 25:
+            pattern += f' … ({len(rle_states)} total)'
+        verdict = ('OSCILLATION pattern (Korbel-Campbell C2 satisfied: '
+                   f'{len(distinct)} distinct CN levels with {transitions} transitions)'
                    if oscillation else
-                   'No oscillation (no chromothripsis-pattern by C2)')
+                   f'No oscillation (distinct levels: {len(distinct)}; '
+                   f'transitions: {transitions})')
         return (f'{label}\t{len(bins)}\t{len(distinct)}\t{transitions}\t'
                 f'{pattern}\t{oscillation}\t{verdict}')
 
