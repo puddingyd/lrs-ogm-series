@@ -43,7 +43,7 @@ from collections import defaultdict
 # ============================================================================
 # HiFiCNV writes per-bin copy-number to <prefix>.copynum.bedgraph
 # (4 cols: chrom, start, end, copynumber). Check your HiFi-WGS output dir.
-COPYNUM_BEDGRAPH = '/Users/changym/Desktop/LR_WGS/Case3/hifi_output/case3.copynum.bedgraph'
+COPYNUM_BEDGRAPH = '/Volumes/cym-data/LR_WGS/20250106_NCKUH_case5_singleton/out/cnv_copynum_bedgraph/Case_5.GRCh38.hificnv.copynum.bedgraph'
 
 # Output directory
 OUTDIR = '/Users/changym/Desktop/LR_WGS/Case3/oscillation_analysis'
