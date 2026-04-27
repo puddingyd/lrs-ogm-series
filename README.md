@@ -121,7 +121,9 @@ too coarse to formally adjudicate the C2 criterion.
   (per-case pbsv and HiFiCNV prioritisation outputs)
 - **Breakpoint coordinates with ACMG classifications**: `data/breakpoint_coordinates.tsv`
 - **ClinVar submissions**: 5 Pathogenic / Likely pathogenic variants
-  (see `data/clinvar_submissions.csv`); accession SCV[pending]
+  (see `data/clinvar_submissions.csv` and `data/clinvar_submissions.xlsx`);
+  accession SCV pending (submission date 2026-04-27)
+- **Repository archive**: Zenodo DOI [10.5281/zenodo.19822622](https://doi.org/10.5281/zenodo.19822622)
 - **Raw HiFi BAM and OGM bnx files** contain identifiable sequence-level data
   and, in accordance with the IRB-approved protocol (NCKUH A-BR-109-045), are
   **available from the corresponding authors upon reasonable request**, subject
@@ -130,8 +132,10 @@ too coarse to formally adjudicate the C2 criterion.
 ## Code availability
 
 All custom analysis scripts in this repository are released under the MIT
-licence. A frozen Zenodo release accompanies each manuscript revision; see the
-top-level Releases tab for the matching DOI.
+licence and are archived at Zenodo together with the data files —
+[10.5281/zenodo.19822622](https://doi.org/10.5281/zenodo.19822622). New
+manuscript revisions will be tagged in `Releases` and minted as additional
+Zenodo DOIs.
 
 ## Manuscript revision history
 
@@ -147,7 +151,8 @@ reproducibility but are **not** required to use the analysis pipelines in
 
 If you use any code or data from this repository, please cite the manuscript
 above (citation will be updated upon acceptance) and this repository
-(`https://github.com/puddingyd/lrs-ogm-series`, Zenodo DOI: pending release).
+(`https://github.com/puddingyd/lrs-ogm-series`,
+[Zenodo DOI 10.5281/zenodo.19822622](https://doi.org/10.5281/zenodo.19822622)).
 
 ## Licence
 
