@@ -61,9 +61,11 @@ def count(chrom, start, stop, label=''):
 
 if __name__ == '__main__':
     if len(sys.argv) < 4:
-        # Default: run for both Case 1 8p22 and Case 3 7q34-q35
+        # Default: run for the three deletions where Section-3 gene count
+        # determines the Riggs classification.
         count('chr8', 12477756, 16798965, 'Case 1 — 8p22 deletion')
         count('chr7', 139635053, 145048896, 'Case 3 — 7q34-q35 deletion')
+        count('chr4', 130337827, 132440009, 'Case 3 — 4q28.3 deletion')
     else:
         chrom = sys.argv[1]
         start = int(sys.argv[2])
