@@ -17,7 +17,7 @@ manuscript revision history that support the submitted manuscript.
 .
 ├── README.md                                this file
 ├── manuscript/
-│   ├── LRS_OGM_series_2026026_revised_v3.docx   ← latest submission file
+│   ├── LRS_OGM_series_2026026_revised_v8.docx   ← latest submission file
 │   ├── archive/                                  earlier docx versions + working notes
 │   └── revision_scripts/                         python-docx scripts that generated the revisions
 ├── data/
@@ -38,8 +38,6 @@ manuscript revision history that support the submitted manuscript.
     │   ├── run_delly_case2.sh
     │   ├── compute_auts2_exon_depth.sh
     │   └── igv_screenshots.batch
-    └── chromothripsis/                           Korbel & Campbell C2 oscillation analysis
-        └── hificnv_oscillation.py
 ```
 
 ## Reproducing the analyses
@@ -100,29 +98,14 @@ Across both Manta v1.6.0 and Delly v1.2.6, **0 SV records** fall within ±50 kb
 of either LRS-defined breakpoint, against background per-base read depths of
 0.07× and 0.16× (versus a median of 106× across captured *AUTS2* exons).
 
-### 3. Chromothripsis assessment (`scripts/chromothripsis/`)
-
-Korbel & Campbell (Cell, 2013) C2 copy-number oscillation criterion applied to
-the HiFiCNV per-segment output for Case 3 chromosomes 2, 5, 7 and 13:
-
-```bash
-# Edit COPYNUM_BEDGRAPH at the top to point at your local HiFiCNV output
-python3 scripts/chromothripsis/hificnv_oscillation.py
-```
-
-In the manuscript we report this analysis cautiously as
-*"features suggestive of chromoanagenesis"* — the HiFiCNV segment-level
-resolution within the rearrangement region (≤25 Mb on chr2, ≤13 Mb on chr7) is
-too coarse to formally adjudicate the C2 criterion.
-
 ## Data availability
 
 - **Filtered SV / CNV calls** (no patient identifiers): `data/manual_review_candidates/`
   (per-case pbsv and HiFiCNV prioritisation outputs)
 - **Breakpoint coordinates with ACMG classifications**: `data/breakpoint_coordinates.tsv`
-- **ClinVar submissions**: 5 Pathogenic / Likely pathogenic variants
-  (see `data/clinvar_submissions.csv` and `data/clinvar_submissions.xlsx`);
-  accession SCV pending (submission date 2026-04-27)
+- **ClinVar submissions**: 4 Pathogenic / Likely pathogenic + 1 VUS
+  variants (see `data/clinvar_submissions.xlsx`); submitted on
+  2026-04-28, accessions pending
 - **Repository archive**: Zenodo DOI [10.5281/zenodo.19822622](https://doi.org/10.5281/zenodo.19822622)
 - **Raw HiFi BAM and OGM bnx files** contain identifiable sequence-level data
   and, in accordance with the IRB-approved protocol (NCKUH A-BR-109-045), are
