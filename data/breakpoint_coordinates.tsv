@@ -1,5 +1,5 @@
 case	variant_id	chrom1	start1	end1	chrom2	start2	end2	size_bp	sv_type	genes_affected	mechanism	acmg_classification	acmg_score
-1	case1_8p23.1_microdeletion	chr8	8174929	10727966	chr8	8174929	10727966	2553037	deletion	8p23.1 microdeletion syndrome region (SOX7, TNKS deleted; GATA4 spared)	NAHR (REPP/REPD); 4-bp microhomology at distal junctions	Pathogenic	+1.00
+1	case1_8p23.1_microdeletion	chr8	8174929	10727966	chr8	8174929	10727966	2553037	deletion	8p23.1 microdeletion syndrome region (SOX7, TNKS deleted; GATA4 spared)	NAHR (REPP/REPD); 4-bp microhomology at distal junctions	Likely pathogenic	+0.90
 1	case1_8p22_deletion	chr8	12477756	16798965	chr8	12477756	16798965	4321209	deletion	7 protein-coding RefSeq genes (C8orf48, DLC1, LONRF1, MSR1, SGCZ, TRMT9B, TUSC3); no established HI gene	NAHR (REPP/REPD); MMEJ at flanking junctions	VUS	+0.10
 1	case1_8p_inversion	chr8	10727966	12477756	chr8	10727966	12477756	1749790	inversion	None at breakpoints (copy-neutral)	NAHR (REPP/REPD)	VUS	0.00
 2	case2_AUTS2_disrupting_inv	chr7	69938691	69938691	chr7	95720897	95720897	NA	inversion (copy-neutral)	AUTS2 (intron 2 truncated by proximal breakpoint)	NHEJ (single-bp T microhomology); MIR3 SINE elements 5.3 kb / 2.3 kb away	Likely pathogenic	NA (PVS1+PM6)
