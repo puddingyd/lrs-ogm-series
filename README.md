@@ -9,9 +9,8 @@ Companion repository for:
 > Submitted to **npj Genomic Medicine**, 2026.
 
 This repository hosts the consolidated breakpoint summary, per-case
-prioritisation outputs, and the analysis pipelines that support the
-manuscript. The manuscript itself, ClinVar submission files, and revision
-history are **not** included here.
+prioritization outputs, and the analysis pipelines that support the
+manuscript. 
 
 ## Repository layout
 
@@ -21,7 +20,7 @@ history are **not** included here.
 ├── data/
 │   ├── breakpoint_coordinates.tsv             14-SV consolidated summary
 │   │                                            with ACMG/AMP classifications
-│   └── manual_review_candidates/              per-case prioritisation outputs
+│   └── manual_review_candidates/              per-case prioritization outputs
 │       ├── case{1,2,3}_pbsv.tsv               pbsv-derived SVs retained for
 │       │                                            manual review
 │       └── case{1,2,3}_hificnv.tsv            HiFiCNV-derived CNVs retained
@@ -61,7 +60,7 @@ variant identified across the three probands. 14 rows × 14 columns:
 | `acmg_classification` | Pathogenic / Likely pathogenic / VUS |
 | `acmg_score` | Riggs 2020 numeric score (CNVs) or ACMG/AMP criteria string (gene-disrupting copy-neutral SVs) |
 
-Tally across the 14 variants:
+Across the 14 variants:
 1 Pathogenic, 2 Likely pathogenic, 11 VUS.
 
 ### `data/manual_review_candidates/`
@@ -86,8 +85,7 @@ sets were narrowed to the final SV set reported per case.
 
 ### `scripts/pipeline/` — generic LRS analysis pipeline
 
-Reusable across any PacBio HiFi sample; the manuscript's three probands were
-analysed with these exact scripts.
+The manuscript's three probands were analysed with these exact scripts.
 
 ```bash
 # (a) BAM-level QC: mapping rate, mean depth, read-length distribution
@@ -106,7 +104,7 @@ bash scripts/pipeline/hificnv_vcf_plus_annotsv_summary.sh \
     -o caseN_hificnv_summary.tsv
 ```
 
-Each prioritisation script emits both a full `*_summary.tsv` and a
+Each prioritization script emits both a full `*_summary.tsv` and a
 `*.manual_review_candidates.tsv` containing only the variants that pass the
 structured filters (population rarity, exon/transcript disruption, OMIM
 relevance, Exomiser_gene_pheno_score > 0). The `data/manual_review_candidates/`
@@ -121,7 +119,7 @@ re-analysis return zero SV records within ±50 kb of either LRS-defined
 breakpoint, against background per-base read depths of 0.07× and 0.16×
 (versus a median of 106× across captured *AUTS2* exons).
 
-Run on macOS (Apple Silicon or Intel) with Docker Desktop installed:
+Run on macOS (Apple Silicon) with Docker Desktop installed:
 
 ```bash
 # (a) Manta v1.6.0 re-analysis (Docker; --platform linux/amd64 for Apple Silicon)
@@ -130,16 +128,14 @@ bash scripts/case2_wes_reanalysis/run_manta_case2.sh
 # (b) Delly v1.2.6 re-analysis (independent caller corroboration)
 bash scripts/case2_wes_reanalysis/run_delly_case2.sh
 
-# (c) Per-AUTS2-exon read-depth computation feeding Supplementary Table 6
+# (c) Per-AUTS2-exon read-depth computation feeding Supplementary Table 7
 bash scripts/case2_wes_reanalysis/compute_auts2_exon_depth.sh
 ```
 
-Edit the `BAM`, `REF`, and `OUTDIR` variables at the top of each script to
-match your local paths before running. The reference must be the
-`GRCh38_full_analysis_set_plus_decoy_hla` build (the same reference the BAM
-was aligned against); the path to a local copy is provided in
-`run_manta_case2.sh`. `compute_auts2_exon_depth.sh` queries the UCSC RefSeq
-REST API at run time, so an internet connection is required.
+The reference is the `GRCh38_full_analysis_set_plus_decoy_hla` build 
+(the same reference the BAM was aligned against); the path to a local copy 
+is provided in `run_manta_case2.sh`. `compute_auts2_exon_depth.sh` queries 
+the UCSC RefSeq REST API at run time, so an internet connection is required.
 
 ## Data availability
 
@@ -148,8 +144,7 @@ REST API at run time, so an internet connection is required.
 - **Consolidated breakpoint coordinates and ACMG classifications**:
   `data/breakpoint_coordinates.tsv`
 - **ClinVar**: 5 of the 14 variants (the 1 Pathogenic + 2 Likely pathogenic +
-  2 VUS) were submitted to ClinVar; the submission spreadsheet itself is not
-  redistributed in this repository — accession numbers will be added to the
+  2 VUS) were submitted to ClinVar; accession numbers will be added to the
   published manuscript once curated by ClinVar.
 - **Repository archive**: the public release accompanying the manuscript is
   archived at Zenodo and citable by DOI; the DOI is reported in the
