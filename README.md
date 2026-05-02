@@ -1,11 +1,10 @@
-# LRS + OGM resolution of "balanced" chromosomal rearrangements in NDD probands
+# Deciphering cryptic aberrations in balanced chromosomal rearrangements using integrated long-read sequencing and optical genome mapping.
 
 Companion repository for:
 
 > Chang Y-M, Pan Y-W, Tsai M-C, Wu P-M, Kuo P-L, Chou Y-Y.
-> *Deciphering cryptic aberrations in "balanced" chromosomal rearrangements in
-> neurodevelopmental disorders using integrated long-read sequencing and
-> optical genome mapping.*
+> *Deciphering cryptic aberrations in balanced chromosomal rearrangements
+> using integrated long-read sequencing and optical genome mapping.*
 > Submitted to **npj Genomic Medicine**, 2026.
 
 This repository hosts the consolidated breakpoint summary, per-case
