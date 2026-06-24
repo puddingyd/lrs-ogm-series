@@ -1,11 +1,10 @@
-# Deciphering cryptic aberrations in balanced chromosomal rearrangements using integrated long-read sequencing and optical genome mapping.
+# Integrated long-read sequencing and optical genome mapping resolve pathogenic cryptic rearrangements in apparently balanced karyotypes
 
 Companion repository for:
 
 > Chang Y-M, Pan Y-W, Tsai M-C, Wu P-M, Kuo P-L, Chou Y-Y.
-> *Deciphering cryptic aberrations in balanced chromosomal rearrangements
-> using integrated long-read sequencing and optical genome mapping.*
-> Submitted to **npj Genomic Medicine**, 2026.
+> *Integrated long-read sequencing and optical genome mapping resolve pathogenic cryptic rearrangements in apparently balanced karyotypes*
+> Submitted to **Human Genetics**, 2026.
 
 This repository hosts the consolidated breakpoint summary, per-case
 prioritization outputs, and the analysis pipelines that support the
